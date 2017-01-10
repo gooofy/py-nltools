@@ -1,0 +1,168 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*- 
+
+#
+# Copyright 2013, 2014, 2016, 2017 Guenter Bartsch
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU Lesser General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU Lesser General Public License for more details.
+# 
+# You should have received a copy of the GNU Lesser General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+#
+# simple pulseaudio playback client
+#
+
+import StringIO
+import wave
+
+import ctypes
+import wave
+import sys
+import logging
+
+from threading import Thread, Lock, Condition
+
+pa = ctypes.cdll.LoadLibrary('libpulse-simple.so.0')
+ 
+PA_STREAM_PLAYBACK = 1
+PA_SAMPLE_S16LE = 3
+BUFFSIZE = 1024
+
+class struct_pa_sample_spec(ctypes.Structure):
+    __slots__ = [
+        'format',
+        'rate',
+        'channels',
+    ]
+ 
+struct_pa_sample_spec._fields_ = [
+    ('format', ctypes.c_int),
+    ('rate', ctypes.c_uint32),
+    ('channels', ctypes.c_uint8),
+]
+pa_sample_spec = struct_pa_sample_spec  # /usr/include/pulse/sample.h:174
+
+class PulsePlayer:
+
+    def __init__(self, name):
+        self.name      = name
+        self.playing   = False
+        self.terminate = False
+        self.thread    = None
+        self.lock      = Lock()
+        self.cond      = Condition(self.lock)
+
+    def _play_loop(self):
+
+        logging.debug("_play_loop starts, a_sound: %d bytes" % len(self.a_sound))
+
+        while not self.terminate:
+            #latency = pa.pa_simple_get_latency(s, error)
+            #if latency == -1:
+            #    raise Exception('Getting latency failed!')
+        
+            #print('{0} usec'.format(latency))
+        
+            # Reading frames and writing to the stream.
+            buf = self.wf.readframes(BUFFSIZE)
+            if buf == '':
+                break
+
+            # logging.debug("_play_loop len: %d" % len(buf))
+        
+            if pa.pa_simple_write(self.s, buf, len(buf), self.error):
+                raise Exception('Could not play file!')
+        
+        self.wf.close()
+
+        
+        #print "free..."
+
+        # Freeing resources and closing connection.
+        pa.pa_simple_free(self.s)
+
+        self.lock.acquire()
+        try:
+            self.playing = False
+            self.cond.notifyAll()
+        finally:
+            self.lock.release()
+
+    def play(self, a_sound, async=True):
+
+        logging.debug("play starts, async: %s" % repr(async))
+
+        self.lock.acquire()
+        try:
+            self.terminate = True
+            while self.playing:
+                self.cond.wait()
+
+            if self.thread:
+                self.thread.join()
+                self.thread = None
+
+            self.terminate = False
+            self.playing   = True
+            self.a_sound   = a_sound
+
+            self.wf = wave.open(StringIO.StringIO(self.a_sound), 'rb')
+
+            self.ss = struct_pa_sample_spec()
+
+            self.ss.rate      = self.wf.getframerate()
+            self.ss.channels  = self.wf.getnchannels()
+            self.ss.format    = PA_SAMPLE_S16LE
+
+            # logging.debug("frame rate: %d, channels: %d" % (self.ss.rate, self.ss.channels))
+
+            self.error = ctypes.c_int(0)
+    
+            self.s = pa.pa_simple_new(
+                None,                    # Default server.
+                self.name,               # Application's name.
+                PA_STREAM_PLAYBACK,      # Stream for playback.
+                None,                    # Default device.
+                'playback',              # Stream's description.
+                ctypes.byref(self.ss),   # Sample format.
+                None,                    # Default channel map.
+                None,                    # Default buffering attributes.
+                ctypes.byref(self.error) # Ignore error code.
+            )
+            if not self.s:
+                raise Exception('Could not create pulse audio stream: {0}!'.format(
+                    pa.strerror(ctypes.byref(self.error))))
+        finally:
+            self.lock.release()
+
+        self.thread = Thread(target=self._play_loop)
+        self.thread.start()
+
+        if not async:
+            # wait for player to finish
+            self.lock.acquire()
+            try:
+                while self.playing:
+                    self.cond.wait()
+
+                # logging.debug ('drain...')
+
+                # # Waiting for all sent data to finish playing.
+
+                # if pa.pa_simple_drain(self.s, ctypes.byref(self.error)):
+                #     raise Exception('Could not simple drain!')
+
+                self.thread.join()
+                self.thread = None
+            finally:
+                self.lock.release()
+
