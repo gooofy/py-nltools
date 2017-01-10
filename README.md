@@ -7,7 +7,10 @@ to replace those.
 Non-exhaustive liste of modules contained:
 
 * phonetics: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
-
+* espeakclient: g2p and speech synthesis using espeak
+* maryclient: g2p and speech synthesis using Mary TTS
+* sequiturclient: g2p using sequitur
+* pulseplayer: audio playback through pulseaudio
 
 I plan to add modules as I need them in my AI projects.
 
@@ -18,6 +21,9 @@ Requirements
 *Note*: very incomplete.
 
 * Python 2.7 
+* Mary TTS
+* espeak
+* pulseaudio
 
 License
 =======
