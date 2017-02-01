@@ -27,7 +27,7 @@ class TestMisc (unittest.TestCase):
 
     def test_load_config(self):
 
-        cfg = misc.load_config()
+        cfg = misc.load_config('.speechrc')
 
         port = int(cfg.get('tts', 'port'))
 

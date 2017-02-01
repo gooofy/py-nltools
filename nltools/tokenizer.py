@@ -80,29 +80,10 @@ def isgalnum (s):
 
 # word replacement table
 wrt = { u'0'             : u'null',
-        u'1'             : u'eins', 
-        u'10'            : u'zehn',
         u'10%'           : u'zehn prozent',
         u'100%'          : u'hundert prozent',
-        u'1000'          : u'tausend',
-        u'11'            : u'elf',
-        u'12'            : u'zwölf',
-        u'1200'          : u'zwölfhundert',
-        u'128'           : u'hundertachtundzwanzig',
-        u'13'            : u'dreizehn',
-        u'132'           : u'hundertzweiunddreißig',
-        u'137'           : u'hundertsiebenunddreißig',
-        u'14'            : u'vierzehn',
-        u'15'            : u'fünfzehn',
-        u'16'            : u'sechzehn',
-        u'160'           : u'hundertsechzig',
-        u'17'            : u'siebzehn',
-        u'170'           : u'hundertsiebzig',
         u'1700'          : u'siebzehnhundert',
-        u'18'            : u'achtzehn',
         u'1825'          : u'achtzehnhundertfünfundzwanzig',
-        u'186'           : u'hundertsechsundachtzig',
-        u'19'            : u'neunzehn',
         u'1949'          : u'neunzehnhundertneunundvierzig',
         u'1960ER'        : u'neunzehnhundertsechziger',
         u'1970ER'        : u'neunzehnhundertsiebziger',
@@ -118,66 +99,11 @@ wrt = { u'0'             : u'null',
         u'1991'          : u'neunzehnhunderteinundneunzig',
         u'1993'          : u'neunzehnhundertdreiundneunzig',
         u'1998'          : u'neunzehnhundertachtundneunzig',
-        u'2'             : u'zwei', 
         u'2%'            : u'zwei prozent', 
-        u'20'            : u'zwanzig',
-        u'200'           : u'zweihundert',
-        u'2000'          : u'zweitausend',
-        u'20000'         : u'zwanzigtausend',
-        u'2002'          : u'zweitausendzwei',
-        u'2004'          : u'zweitausendvier',
-        u'2005'          : u'zweitausendfünf',
-        u'2150'          : u'zweitausendeinhundertfünfzig',
-        u'2310'          : u'zweitausenddreihundertzehn',
-        u'204'           : u'zweihundertvier',
-        u'21'            : u'einundzwanzig',
-        u'226'           : u'zweihundertsechsundzwanzig',
-        u'22'            : u'zweiundzwanzig',
-        u'23'            : u'dreiundzwanzig',
-        u'24'            : u'vierundzwanzig',
-        u'242'           : u'zweihundertzweiundvierzig',
-        u'25'            : u'fünfundzwanzig', 
-        u'28'            : u'achtundzwanzig', 
-        u'250'           : u'zweihundertfünfzig',
-        u'253'           : u'zweihundertdreiundfünfzig',
-        u'254'           : u'zweihundertvierundfünfzig',
-        u'3'             : u'drei', 
-        u'30'            : u'dreißig',
-        u'300'           : u'dreihundert',
-        u'32'            : u'zweiunddreißig',
-        u'33'            : u'dreiunddreißig',
-        u'328'           : u'dreihundertachtundzwanzig',
-        u'35'            : u'fünfunddreißig',
-        u'4'             : u'vier', 
         u'40%'           : u'vierzig prozent', 
-        u'400'           : u'vierhundert', 
-        u'4000'          : u'viertausend', 
-        u'4096'          : u'viertausendsechsundneunzig', 
-        u'418'           : u'vierhundertachtzehn', 
-        u'42'            : u'zweiundvierzig',
-        u'43'            : u'dreiundvierzig',
-        u'45'            : u'fünfundvierzig', 
-        u'5'             : u'fünf', 
-        u'50'            : u'fünfzig', 
-        u'55'            : u'fünfundfünfzig', 
-        u'500000'        : u'fünfhunderttausend', 
-        u'57'            : u'siebenundfünfzig', 
-        u'6'             : u'sechs', 
-        u'63'            : u'dreiundsechzig', 
-        u'7'             : u'sieben',
-        u'75'            : u'fünfundsiebzig',
-        u'8'             : u'acht',
-        u'80'            : u'achtzig',
         u'80%'           : u'achtzig prozent',
         u'800'           : u'achthundert',
         u'80ER'          : u'achtziger',
-        u'850'           : u'achthundertfünfzig',
-        u'852'           : u'achthundertzweiundfünfzig',
-        u'9'             : u'neun',
-        u'90'            : u'neunzig',
-        u'95'            : u'fünfundneunzig',
-        u'99'            : u'neunundneunzig',
-        u'100'           : u'hundert',
         u'daß'           : u'dass',
         u'haß'           : u'hass',
         u'gross'         : u'groß',
@@ -374,10 +300,14 @@ def spellout_number (m):
 
     # print "spellout number:", numstr
 
-    res = ''
+    if numstr[0].isspace():
+        numstr = numstr[1:]
+        res = ' '
+    else:
+        res = ''
 
     if numstr[0] == '-':
-        res = 'minus '
+        res += 'minus '
         numstr = numstr[1:].strip()
 
     if not '.' in numstr:
@@ -400,7 +330,8 @@ def spellout_number (m):
     
     return res
 
-NUMBER_PATTERN = re.compile(r"[-]?\d+[,.]?\d*")
+NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
+NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
 
 def tokenize (s, lang='de'):
 
@@ -417,7 +348,9 @@ def tokenize (s, lang='de'):
         s = s.replace (srch, repl)
 
     # deal with numbers
-    s = NUMBER_PATTERN.sub(spellout_number, s).replace('-',' ')
+    s = NUMBER_PATTERN_START.sub(spellout_number, s)
+    s = NUMBER_PATTERN_SPACE.sub(spellout_number, s)
+    s = s.replace('-',' ')
 
     res = []
 

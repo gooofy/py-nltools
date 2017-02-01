@@ -47,6 +47,8 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"1000000 2234567"), [u'einemillion', u'zweimillionenzweihundertvierunddreißigtausendfünfhundertsiebenundsechzig'])
         self.assertEqual (tokenize(u"zahlten 1000000"), [u'zahlten', u'einemillion'])
 
+        self.assertEqual (tokenize(u"b5 mal 3 in abc5"), [u'b5', u'mal', u'drei', u'in', u'abc5'])
+
     def test_ws(self):
         self.assertEqual (compress_ws('   ws   foo bar'), ' ws foo bar')
 
