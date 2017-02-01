@@ -22,10 +22,14 @@
 # just a collection of random utility subprograms
 #
 
+import sys
 import os
 import subprocess
 import ConfigParser
 import shutil
+import errno
+import curses
+import curses.textpad
 
 from os.path import expanduser
 
