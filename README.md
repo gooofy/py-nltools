@@ -1,7 +1,7 @@
 # py-nltools
 
 A collection of random bits and pieces of code for natural language processing. Most of them are
-pretty hands-on simple-minded compared to projects like NLTK ot spaCy and therefore in no way meant
+pretty hands-on simple-minded compared to projects like NLTK or spaCy and therefore in no way meant
 to replace those. 
 
 Non-exhaustive liste of modules contained:
@@ -11,6 +11,7 @@ Non-exhaustive liste of modules contained:
 * maryclient: g2p and speech synthesis using Mary TTS
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
+* tokenizer: (as of this writing: german only) word tokenizer aimed at spoken language applications
 
 I plan to add modules as I need them in my AI projects.
 
