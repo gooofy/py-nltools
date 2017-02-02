@@ -31,6 +31,7 @@ import errno
 import curses
 import curses.textpad
 
+from setproctitle import setproctitle
 from os.path import expanduser
 
 def load_config(configfn = '.nlprc'):
@@ -41,6 +42,14 @@ def load_config(configfn = '.nlprc'):
     config.read("%s/%s" % (home_path, configfn))
 
     return config
+
+def init_app (proc_title):
+
+    setproctitle (proc_title)
+
+    reload(sys)
+    sys.setdefaultencoding('utf-8')
+    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
 def compress_ws (s):
 
