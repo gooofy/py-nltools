@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2013, 2014, 2016 Guenter Bartsch
+# Copyright 2013, 2014, 2016, 2017 Guenter Bartsch
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -333,7 +333,16 @@ def spellout_number (m):
 NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
 NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
 
-def tokenize (s, lang='de'):
+PUNCTUATION = [
+    u',', u'.', u';', u':', 
+    u'?', u'!', 
+    u'+', u'-', u'*', u'#', u'=', u'|'
+    u'/', u'\\',  
+    u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
+    u'\'', u'"',
+]
+
+def tokenize (s, lang='de', keep_punctuation=False):
 
     global wrt
 
@@ -350,7 +359,14 @@ def tokenize (s, lang='de'):
     # deal with numbers
     s = NUMBER_PATTERN_START.sub(spellout_number, s)
     s = NUMBER_PATTERN_SPACE.sub(spellout_number, s)
-    s = s.replace('-',' ')
+
+    # deal with punctuation
+    if keep_punctuation:
+        for p in PUNCTUATION:
+            s = s.replace (p, u' ' + p + u' ')
+    else:
+        for p in PUNCTUATION:
+            s = s.replace(p,' ')
 
     res = []
 
@@ -360,7 +376,7 @@ def tokenize (s, lang='de'):
 
     for word in words:
 
-        w = re.sub(r"[,.?+*#! ;:/\"\[\]()='»«<>|]", '', word.rstrip()).replace(u'–',u'').lower()
+        w = word.rstrip().replace(u'–',u'').lower()
         if len(w) > 0:
 
             if w in wrt:
