@@ -1,12 +1,117 @@
-@prefix rdf:	<http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
-@prefix rdfs:   <http://www.w3.org/2000/01/rdf-schema#>.
-@prefix xsd:    <http://www.w3.org/2001/XMLSchema#>.
-@prefix dbr:	<http://dbpedia.org/resource/> .
-@prefix dbp:	<http://dbpedia.org/property/> .
-@prefix dbo:	<http://dbpedia.org/ontology/> .
-@prefix yago:	<http://dbpedia.org/class/yago/> .
-@prefix foaf:	<http://xmlns.com/foaf/0.1/> .
-@prefix schema: <http://schema.org/> .
+@prefix rdf:	  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs:     <http://www.w3.org/2000/01/rdf-schema#>.
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#>.
+@prefix dbc:      <http://dbpedia.org/resource/Category:> .
+@prefix dbr:	  <http://dbpedia.org/resource/> .
+@prefix dbp:	  <http://dbpedia.org/property/> .
+@prefix dbo:	  <http://dbpedia.org/ontology/> .
+@prefix yago:	  <http://dbpedia.org/class/yago/> .
+@prefix foaf:	  <http://xmlns.com/foaf/0.1/> .
+@prefix schema:   <http://schema.org/> .
+@prefix umbel-rc: <http://umbel.org/umbel/rc/> .
+@prefix wikidata: <http://www.wikidata.org/entity/> .
+@prefix owl:	  <http://www.w3.org/2002/07/owl#> .
+@prefix dct:      <http://purl.org/dc/terms/> .
+
+#
+# some random data on german chancellors
+#
+
+#
+# what we need for our tests to work:
+#
+# ?chancellor rdfs:label ?label.
+# ?chancellor rdf:type schema:Person.
+# ?chancellor dbp:office dbr:Chancellor_of_Germany.
+# ?chancellor dbo:birthPlace ?birthPlace.
+# ?leaderof dbo:leader ?chancellor 
+# ?birthPlace rdf:type dbo:Settlement.
+
+
+#
+# Helmut Kohl
+#
+
+dbr:Helmut_Kohl	rdf:type	yago:Official110372373 .
+dbr:Helmut_Kohl	rdf:type	dbo:OfficeHolder .
+dbr:Helmut_Kohl	rdf:type	foaf:Person .
+dbr:Helmut_Kohl	rdf:type	umbel-rc:Politician .
+dbr:Helmut_Kohl	rdf:type	wikidata:Q5 .
+dbr:Helmut_Kohl	rdf:type	schema:Person .
+dbr:Helmut_Kohl	rdf:type	owl:Thing .
+
+dbr:Helmut_Kohl
+    dbo:birthPlace  dbr:Weimar_Republic ,
+                    dbr:Ludwigshafen ;
+    dbp:birthPlace  dbr:Weimar_Republic ,
+                    dbr:Ludwigshafen .
+dbr:Ludwigshafen rdf:type dbo:Settlement.
+
+dbr:Helmut_Kohl rdfs:label  "Helmut Kohl"@es ,
+        "Helmut Kohl"@fr ,
+        "\u8D6B\u5C14\u7A46\u7279\u00B7\u79D1\u5C14"@zh ,
+        "Helmut Kohl"@pt ,
+        "Helmut Kohl"@it ,
+        "\u30D8\u30EB\u30E0\u30FC\u30C8\u30FB\u30B3\u30FC\u30EB"@ja ,
+        "Helmut Kohl"@en ,
+        "\u0647\u0644\u0645\u0648\u062A \u0643\u0648\u0644"@ar ,
+        "Helmut Kohl"@de ,
+        "Helmut Kohl"@nl ,
+        "\u041A\u043E\u043B\u044C, \u0413\u0435\u043B\u044C\u043C\u0443\u0442"@ru ,
+        "Helmut Kohl"@pl ;
+    rdfs:seeAlso    dbr:Awards_received_by_Helmut_Kohl ,
+        dbr:List_of_honors .
+dbr:Helmut_Kohl dbo:birthDate   "1930-04-03"^^xsd:date .
+dbr:Helmut_Kohl dct:subject dbc:Members_of_the_Bundestag ,
+        dbc:German_Roman_Catholics ,
+        dbc:German_anti-communists ,
+        dbc:Recipients_of_the_Order_of_Merit_of_the_Federal_Republic_of_Germany ,
+        dbc:Living_people ,
+        dbc:Members_of_the_Landtag_of_Rhineland-Palatinate ,
+        <http://dbpedia.org/resource/Category:1930_births> ,
+        <http://dbpedia.org/resource/Category:Christian_Democratic_Union_(Germany)_politicians> ,
+        dbc:Presidents_of_the_European_Council ,
+        dbc:Jawaharlal_Nehru_Award_laureates ,
+        dbc:Heidelberg_University_alumni ,
+        dbc:Chancellors_of_Germany ,
+        dbc:Conservatism_in_Germany ,
+        dbc:Presidential_Medal_of_Freedom_recipients ,
+        dbc:Honorary_Knights_Grand_Cross_of_the_Order_of_St_Michael_and_St_George ,
+        <http://dbpedia.org/resource/Category:People_from_the_Palatinate_(region)> ,
+        dbc:Helmut_Kohl ,
+        dbc:People_from_Ludwigshafen ,
+        dbc:German_military_personnel_of_World_War_II ,
+        dbc:Grand_Order_of_Queen_Jelena_recipients ;
+    dbo:wikiPageID  41896 ;
+    dbo:wikiPageRevisionID  708239561 ;
+    dbp:almaMater   dbr:Heidelberg_University ;
+    dbp:birthDate   "1930-04-03"^^xsd:date ;
+    dbp:birthname   "Helmut Josef Michael Kohl"@en ;
+    dbp:deputy  dbr:Klaus_Kinkel ,
+        dbr:Hans-Dietrich_Genscher ,
+        dbr:Jürgen_Möllemann ;
+    dbp:office  dbr:Chancellor_of_Germany ,
+        "Minister-President of Rhineland-Palatinate"@en ;
+    dbp:party   "Christian Democratic Union"@en ;
+    dbp:predecessor dbr:Peter_Altmeier ,
+        dbr:Helmut_Schmidt ;
+    dbp:president   dbr:Roman_Herzog ,
+        dbr:Richard_von_Weizsäcker ,
+        dbr:Karl_Carstens ;
+    dbp:religion    dbr:Catholic_Church ;
+    dbp:signature   "Helmut Kohl Signature.svg"@en ;
+    dbp:spouse  "Maike Richter"@en ,
+        "Hannelore Renner"@en ;
+    dbp:successor   <http://dbpedia.org/resource/Bernhard_Vogel_(politician)> ,
+        dbr:Gerhard_Schröder ;
+    dbp:termEnd "1976-12-02"^^xsd:date ,
+        "1998-10-27"^^xsd:date ;
+    dbp:termStart   "1969-05-19"^^xsd:date ,
+        "1982-10-01"^^xsd:date .
+
+#
+# Angela Merkel
+#
 
 dbr:Germany	        dbo:leader	dbr:Angela_Merkel .
 

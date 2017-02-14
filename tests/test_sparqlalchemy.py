@@ -55,9 +55,9 @@ class TestSPARQLAlchemy (unittest.TestCase):
             self.sas.parse(data=data, context=self.context, format='n3')
 
     def test_import(self):
-        self.assertEqual (len(self.sas), 30)
+        self.assertEqual (len(self.sas), 103)
 
-    def test_query(self):
+    def test_query_optional(self):
 
         sparql = """
                  PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -75,11 +75,70 @@ class TestSPARQLAlchemy (unittest.TestCase):
 
         res = self.sas.query(sparql)
 
+        self.assertEqual(len(res), 24)
+
         for row in res:
+            s = ''
             for v in res.vars:
-                logging.debug('sparql result row: %s=%s' % (v, row[v]))
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
 
+    def test_query_filter(self):
 
+        sparql = """
+                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                 PREFIX schema: <http://schema.org/>
+                 PREFIX dbr: <http://dbpedia.org/resource/>
+                 PREFIX dbo: <http://dbpedia.org/ontology/>
+                 SELECT ?leader ?label ?leaderobj 
+                 WHERE {
+                     ?leader rdfs:label ?label. 
+                     ?leader rdf:type schema:Person.
+                     OPTIONAL {?leaderobj dbo:leader ?leader}
+                     FILTER (lang(?label) = 'de')
+                 }
+                 """
+
+        res = self.sas.query(sparql)
+
+        self.assertEqual(len(res), 2)
+
+        for row in res:
+            s = ''
+            for v in res.vars:
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
+
+        # SELECT ?temp_min ?temp_max ?precipitation ?clouds ?icon
+        #                        WHERE {
+        #                            ?wev hal:dt_end ?dt_end. 
+        #                            ?wev hal:dt_start ?dt_start.
+        #                            ?wev hal:location %s.
+        #                            ?wev hal:temp_min ?temp_min   .
+        #                            ?wev hal:temp_max ?temp_max   .
+        #                            ?wev hal:precipitation ?precipitation .
+        #                            ?wev hal:clouds ?clouds .
+        #                            ?wev hal:icon ?icon .
+        #                            FILTER (?dt_start >= \"%s\"^^xsd:dateTime &&
+        #                            ?dt_end   <= \"%s\"^^xsd:dateTime)
+# sparql_macro ('GERMAN_CHANCELLORS', "SELECT ?label ?leaderof
+#                                      WHERE {
+#                                          ?chancellor rdfs:label ?label.
+#                                          ?chancellor rdf:type schema:Person.
+#                                          ?chancellor dbp:office dbr:Chancellor_of_Germany.
+#                                          OPTIONAL { ?leaderof dbo:leader ?chancellor }.
+#                                          FILTER (lang(?label) = 'de')
+#                                      }", L, LEADEROF).
+# 
+# sparql_macro ('PERSON_BP', "SELECT ?label ?birthPlace 
+#                            WHERE {
+#                                ?chancellor rdfs:label ?label.
+#                                ?chancellor dbo:birthPlace ?birthPlace.
+#                                ?chancellor rdf:type schema:Person.
+#                                ?birthPlace rdf:type dbo:Settlement.
+#                                FILTER (lang(?label) = 'de')
+#                            }", L, BP).
 
 if __name__ == "__main__":
 

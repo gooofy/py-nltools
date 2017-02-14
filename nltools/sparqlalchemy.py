@@ -227,6 +227,54 @@ class SPARQLAlchemyStore(object):
         self.addN(quads)
 
 
+    def _check_keys(self, d, keys):
+        """ensure dict d has only the given keys"""
+        for k in d:
+            if not (k in keys):
+                raise Exception ('unexpected key found: %s' % k)
+
+    #
+    # convert a RelationalExpression to sqlalchemy operators
+    #
+
+    def _expr2alchemy(self, node, var_map, var_lang, var_dts):
+
+        res = None
+
+        if isinstance(node, rdflib.term.Literal):
+            res = unicode(node)
+
+        elif node.name == 'RelationalExpression':
+
+            self._check_keys(node, set(['expr', 'op', 'other', '_vars']))
+
+            if node['op'] == '=':
+
+                o1 = self._expr2alchemy(node['expr'], var_map, var_lang, var_dts)
+                o2 = self._expr2alchemy(node['other'], var_map, var_lang, var_dts)
+
+                res = o1 == o2
+
+            else:
+                raise Exception ('RelationalExpression op %s unknown.' % node['op'])
+
+        elif node.name == 'Builtin_LANG':
+
+            self._check_keys(node, set(['arg', '_vars']))
+
+            # logging.debug ('arg=%s' % node['arg'].__class__)
+
+            if not isinstance (node['arg'], rdflib.term.Variable):
+                raise Exception ('Builtin_LANG: argumented expected to be a variable.')
+
+            res = var_lang[unicode(node['arg'])]
+
+        else:
+
+            raise Exception ('expression node type %s unknown.' % node.name)
+
+        return res
+
     #
     # convert a sparql select statement to an sqlalchemy SELECT statement
     #
@@ -239,6 +287,8 @@ class SPARQLAlchemyStore(object):
         var_dts    = {}
 
         if node.name == 'SelectQuery':
+
+            self._check_keys(node, set(['p', 'datasetClause', '_vars', 'PV']))
 
             assert node['datasetClause'] is None # FIXME: implement
 
@@ -270,21 +320,11 @@ class SPARQLAlchemyStore(object):
             for var_name in var_dts:
                 var_dts[var_name] = res.c[var_name + '_dt']
 
-            # vs = []
-
-            # for v in node['PV']:
-            #     var_name = unicode(v)
-            #     vs.append(p_var_map[var_name])
-            #     var_map[var_name] = p_var_map[var_name]
-
-            # res = sql.select(vs).select_from(p_stmt).distinct().alias()
-
-            # for var_name in var_map:
-            #     var_map[var_name] = res.c[var_name]
-
             logging.debug('SelectQuery: res: %s' % res.compile(compile_kwargs={"literal_binds": True}))
 
         elif node.name == 'Project':
+
+            self._check_keys(node, set(['p', '_vars', 'PV']))
 
             p_stmt, p_var_map, p_var_lang, p_var_dts = self._algebra2alchemy(node['p'])
 
@@ -318,11 +358,38 @@ class SPARQLAlchemyStore(object):
 
         elif node.name == 'Filter':
 
-            self._algebra2alchemy(node['p'])
+            self._check_keys(node, set(['p', 'expr', '_vars']))
+            p_stmt, var_map, var_lang, var_dts = self._algebra2alchemy(node['p'])
 
-            raise Exception ('FIXME: node type %s not fully implemented yet.' % node.name)
+            expr = self._expr2alchemy(node['expr'], var_map, var_lang, var_dts)
+
+            sel_list = []
+            for var_name in var_map:
+                sel_list.append(var_map[var_name].label(var_name))
+            for var_name in var_lang:
+                sel_list.append(var_lang[var_name].label(var_name + '_lang'))
+            for var_name in var_dts:
+                sel_list.append(var_dts[var_name].label(var_name + '_dt'))
+
+            res = sql.select(sel_list).select_from(p_stmt).where(expr).distinct().alias()
+
+            for var_name in var_map:
+                var_map[var_name] = res.c[var_name]
+            for var_name in var_lang:
+                var_lang[var_name] = res.c[var_name + '_lang']
+            for var_name in var_dts:
+                var_dts[var_name] = res.c[var_name + '_dt']
+
+            logging.debug('Filter: res: %s' % res.compile(compile_kwargs={"literal_binds": True}))
 
         elif node.name == 'LeftJoin':
+
+            self._check_keys(node, set(['p1', 'p2', 'expr', '_vars']))
+
+            # FIXME: proper expression support needed
+            assert node['expr'].name == 'TrueFilter'
+            self._check_keys(node['expr'], set(['_vars']))
+            assert len(node['expr']['_vars']) == 0
 
             p1_stmt, p1_var_map, p1_var_lang, p1_var_dts = self._algebra2alchemy(node['p1'])
             p2_stmt, p2_var_map, p2_var_lang, p2_var_dts = self._algebra2alchemy(node['p2'])
@@ -368,6 +435,8 @@ class SPARQLAlchemyStore(object):
             logging.debug('LeftJoin: res: %s' % res.compile(compile_kwargs={"literal_binds": True}))
 
         elif node.name == 'BGP':
+
+            self._check_keys(node, set(['triples', '_vars']))
 
             for t in node['triples']:
 
@@ -526,13 +595,14 @@ class SPARQLAlchemyStore(object):
                 lang_col = var_lang[var_name].name if var_name in var_lang else None
                 dt_col   = var_dts[var_name].name  if var_name in var_dts  else None
 
+                o    = row[var_name]
                 lang = row[lang_col] if lang_col else None
                 dt   = row[dt_col]   if dt_col else None
 
-                if lang or dt:
-                    d[v] = rdflib.Literal(row[var_name], lang=lang, datatype=dt)
+                if lang or dt or not o:
+                    d[v] = rdflib.Literal(o, lang=lang, datatype=dt)
                 else:
-                    d[v] = rdflib.URIRef(row[var_name])
+                    d[v] = rdflib.URIRef(o)
 
             # rr=ResultRow({ Variable('a'): URIRef('urn:cake') }, [Variable('a')])
             rrows.append(rdflib.query.ResultRow(d, l))
