@@ -14,6 +14,52 @@
 @prefix wdt:      <http://www.wikidata.org/prop/direct/> .
 @prefix owl:	  <http://www.w3.org/2002/07/owl#> .
 @prefix dct:      <http://purl.org/dc/terms/> .
+@prefix hal:      <http://hal.zamia.org/kb/> .
+
+#
+# some random weather data
+#
+
+hal:fc_Stuttgart_20161205_180000 hal:clouds "0.0"^^xsd:float ;
+    hal:description "clear sky" ;
+    hal:dt_end "2016-12-05T21:00:00+00:00"^^xsd:dateTime ;
+    hal:dt_start "2016-12-05T18:00:00+00:00"^^xsd:dateTime ;
+    hal:icon "01n" ;
+    hal:location dbr:Stuttgart ;
+    hal:precipitation "0.0"^^xsd:float ;
+    hal:temp_max "-5.816"^^xsd:float ;
+    hal:temp_min "-7.1"^^xsd:float .
+
+hal:fc_Stuttgart_20161207_090000 hal:clouds "0.0"^^xsd:float ;
+    hal:description "clear sky" ;
+    hal:dt_end "2016-12-07T12:00:00+00:00"^^xsd:dateTime ;
+    hal:dt_start "2016-12-07T09:00:00+00:00"^^xsd:dateTime ;
+    hal:icon "01d" ;
+    hal:location dbr:Stuttgart ;
+    hal:precipitation "0.0"^^xsd:float ;
+    hal:temp_max "1.035"^^xsd:float ;
+    hal:temp_min "1.035"^^xsd:float .
+
+hal:fc_Tallinn_20161207_060000 hal:clouds "80.0"^^xsd:float ;
+    hal:description "clear sky" ;
+    hal:dt_end "2016-12-07T09:00:00+00:00"^^xsd:dateTime ;
+    hal:dt_start "2016-12-07T06:00:00+00:00"^^xsd:dateTime ;
+    hal:icon "01d" ;
+    hal:location dbr:Tallinn ;
+    hal:precipitation "0.0"^^xsd:float ;
+    hal:temp_max "3.38"^^xsd:float ;
+    hal:temp_min "3.38"^^xsd:float .
+
+hal:fc_Tallinn_20161209_150000 hal:clouds "0.0"^^xsd:float ;
+    hal:description "clear sky" ;
+    hal:dt_end "2016-12-09T18:00:00+00:00"^^xsd:dateTime ;
+    hal:dt_start "2016-12-09T15:00:00+00:00"^^xsd:dateTime ;
+    hal:icon "01n" ;
+    hal:location dbr:Tallinn ;
+    hal:precipitation "0.0"^^xsd:float ;
+    hal:temp_max "-0.442"^^xsd:float ;
+    hal:temp_min "-0.442"^^xsd:float .
+
 
 #
 # some random data on german chancellors
