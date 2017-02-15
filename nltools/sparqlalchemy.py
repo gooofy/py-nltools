@@ -244,6 +244,10 @@ class SPARQLAlchemyStore(object):
         if isinstance(node, rdflib.term.Literal):
             res = unicode(node)
 
+        elif isinstance(node, rdflib.term.Variable):
+
+            res = var_map[unicode(node)]
+
         elif node.name == 'RelationalExpression':
 
             self._check_keys(node, set(['expr', 'op', 'other', '_vars']))
@@ -254,6 +258,20 @@ class SPARQLAlchemyStore(object):
                 o2 = self._expr2alchemy(node['other'], var_map, var_lang, var_dts)
 
                 res = o1 == o2
+
+            elif node['op'] == '>=':
+
+                o1 = self._expr2alchemy(node['expr'], var_map, var_lang, var_dts)
+                o2 = self._expr2alchemy(node['other'], var_map, var_lang, var_dts)
+
+                res = o1 >= o2
+
+            elif node['op'] == '<=':
+
+                o1 = self._expr2alchemy(node['expr'], var_map, var_lang, var_dts)
+                o2 = self._expr2alchemy(node['other'], var_map, var_lang, var_dts)
+
+                res = o1 <= o2
 
             else:
                 raise Exception ('RelationalExpression op %s unknown.' % node['op'])

@@ -54,9 +54,11 @@ class TestSPARQLAlchemy (unittest.TestCase):
 
             self.sas.parse(data=data, context=self.context, format='n3')
 
+    # @unittest.skip("temporarily disabled")
     def test_import(self):
-        self.assertEqual (len(self.sas), 116)
+        self.assertEqual (len(self.sas), 152)
 
+    # @unittest.skip("temporarily disabled")
     def test_query_optional(self):
 
         sparql = """
@@ -83,6 +85,7 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
+    # @unittest.skip("temporarily disabled")
     def test_query_filter(self):
 
         sparql = """
@@ -141,6 +144,7 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
+    # @unittest.skip("temporarily disabled")
     def test_distinct(self):
 
         sparql = """
@@ -166,18 +170,41 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
-        # SELECT ?temp_min ?temp_max ?precipitation ?clouds ?icon
-        #                        WHERE {
-        #                            ?wev hal:dt_end ?dt_end. 
-        #                            ?wev hal:dt_start ?dt_start.
-        #                            ?wev hal:location %s.
-        #                            ?wev hal:temp_min ?temp_min   .
-        #                            ?wev hal:temp_max ?temp_max   .
-        #                            ?wev hal:precipitation ?precipitation .
-        #                            ?wev hal:clouds ?clouds .
-        #                            ?wev hal:icon ?icon .
-        #                            FILTER (?dt_start >= \"%s\"^^xsd:dateTime &&
-        #                            ?dt_end   <= \"%s\"^^xsd:dateTime)
+    # @unittest.skip("temporarily disabled")
+    def test_dates(self):
+
+        sparql = """
+                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                 PREFIX schema: <http://schema.org/>
+                 PREFIX dbr: <http://dbpedia.org/resource/>
+                 PREFIX dbo: <http://dbpedia.org/ontology/>
+                 PREFIX hal: <http://hal.zamia.org/kb/> 
+                 SELECT ?temp_min ?temp_max ?precipitation ?clouds ?icon
+                 WHERE {
+                     ?wev hal:dt_end ?dt_end. 
+                     ?wev hal:dt_start ?dt_start.
+                     ?wev hal:location dbr:Stuttgart.
+                     ?wev hal:temp_min ?temp_min   .
+                     ?wev hal:temp_max ?temp_max   .
+                     ?wev hal:precipitation ?precipitation .
+                     ?wev hal:clouds ?clouds .
+                     ?wev hal:icon ?icon .
+                     FILTER (?dt_start >= \"2016-12-04T10:20:13+05:30\"^^xsd:dateTime &&
+                             ?dt_end   <= \"2016-12-23T10:20:13+05:30\"^^xsd:dateTime)
+                 }
+                 """
+
+        res = self.sas.query(sparql)
+
+        self.assertEqual(len(res), 2)
+
+        for row in res:
+            s = ''
+            for v in res.vars:
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
+
 
 # sparql_macro ('GERMAN_CHANCELLORS', "SELECT ?label ?leaderof
 #                                      WHERE {
