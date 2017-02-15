@@ -144,6 +144,34 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
+        sparql = """
+                 PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+                 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                 PREFIX schema: <http://schema.org/>
+                 PREFIX dbr:    <http://dbpedia.org/resource/>
+                 PREFIX dbo:    <http://dbpedia.org/ontology/>
+                 PREFIX dbp:    <http://dbpedia.org/property/>
+                 PREFIX owl:    <http://www.w3.org/2002/07/owl#> 
+                 PREFIX wdt:    <http://www.wikidata.org/prop/direct/> 
+                 SELECT ?label ?leaderof
+                 WHERE {
+                     ?chancellor rdfs:label ?label.
+                     ?chancellor rdf:type schema:Person.
+                     ?chancellor dbp:office dbr:Chancellor_of_Germany.
+                     OPTIONAL { ?leaderof dbo:leader ?chancellor }.
+                     FILTER (lang(?label) = 'de')
+                 }"""
+
+        res = self.sas.query(sparql)
+
+        self.assertEqual(len(res), 1)
+
+        for row in res:
+            s = ''
+            for v in res.vars:
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
+
     # @unittest.skip("temporarily disabled")
     def test_distinct(self):
 
@@ -205,16 +233,6 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
-
-# sparql_macro ('GERMAN_CHANCELLORS', "SELECT ?label ?leaderof
-#                                      WHERE {
-#                                          ?chancellor rdfs:label ?label.
-#                                          ?chancellor rdf:type schema:Person.
-#                                          ?chancellor dbp:office dbr:Chancellor_of_Germany.
-#                                          OPTIONAL { ?leaderof dbo:leader ?chancellor }.
-#                                          FILTER (lang(?label) = 'de')
-#                                      }", L, LEADEROF).
-# 
 
 if __name__ == "__main__":
 
