@@ -10,6 +10,8 @@
 @prefix schema:   <http://schema.org/> .
 @prefix umbel-rc: <http://umbel.org/umbel/rc/> .
 @prefix wikidata: <http://www.wikidata.org/entity/> .
+@prefix wd:       <http://www.wikidata.org/entity/> .
+@prefix wdt:      <http://www.wikidata.org/prop/direct/> .
 @prefix owl:	  <http://www.w3.org/2002/07/owl#> .
 @prefix dct:      <http://purl.org/dc/terms/> .
 
@@ -24,8 +26,10 @@
 # ?chancellor rdf:type schema:Person.
 # ?chancellor dbp:office dbr:Chancellor_of_Germany.
 # ?chancellor dbo:birthPlace ?birthPlace.
+# ?chancellor owl:sameAs	dbpedia-wikidata:Q567.
 # ?leaderof dbo:leader ?chancellor 
 # ?birthPlace rdf:type dbo:Settlement.
+
 
 
 #
@@ -108,6 +112,11 @@ dbr:Helmut_Kohl dct:subject dbc:Members_of_the_Bundestag ,
         "1998-10-27"^^xsd:date ;
     dbp:termStart   "1969-05-19"^^xsd:date ,
         "1982-10-01"^^xsd:date .
+dbr:Helmut_Kohl owl:sameAs	wikidata:Q2518.
+wikidata:Q2518 wdt:P21 wd:Q6581097.
+
+wikidata:Q6581097 rdfs:label "männlich"@de.
+wikidata:Q6581097 rdfs:label "male"@en.
 
 #
 # Angela Merkel
@@ -144,4 +153,15 @@ dbr:Angela_Merkel	rdfs:label	"Angela Merkel"@fr ,
 		"\u30A2\u30F3\u30B2\u30E9\u30FB\u30C9\u30ED\u30C6\u30A2\u30FB\u30E1\u30EB\u30B1\u30EB\uFF08\u30C9\u30A4\u30C4\u8A9E: Angela Dorothea Merkel\u3001\u51FA\u751F\u540D\uFF1A\u30A2\u30F3\u30B2\u30E9\u30FB\u30C9\u30ED\u30C6\u30A2\u30FB\u30AB\u30B9\u30CA\u30FC\uFF0FAngela Dorothea Kasner\u30011954\u5E747\u670817\u65E5 - \uFF09\u306F\u3001\u30C9\u30A4\u30C4\u306E\u653F\u6CBB\u5BB6\u30022000\u5E74\u3088\u308A\u30AD\u30EA\u30B9\u30C8\u6559\u6C11\u4E3B\u540C\u76DF (CDU) \u515A\u9996\u3002\u7B2C8\u4EE3\u30C9\u30A4\u30C4\u9023\u90A6\u5171\u548C\u56FD\u9996\u76F8\u3002\u30C9\u30A4\u30C4\u56FD\u5185\u306B\u304A\u3044\u3066\u3001\u5973\u6027\u3068\u3057\u3066\u306F\u521D\u306E\u5927\u653F\u515A\u515A\u9996\u30FB\u9996\u76F8\u3067\u3042\u308B\u3002"@ja ,
 		"Angela Dorothea Merkel (API : /\u02C8a\u014B\u0261ela (aussi: a\u014B\u02C8\u0261e\u02D0la) do\u0280o\u02C8te\u02D0a \u02C8m\u025B\u0281kl\u0329/), n\u00E9e Kasner, le  \u00E0 Hambourg, est une femme d'\u00C9tat allemande, chanceli\u00E8re f\u00E9d\u00E9rale depuis 2005.Physicienne de formation, membre de l'Union chr\u00E9tienne-d\u00E9mocrate (CDU), elle assume la charge de ministre f\u00E9d\u00E9ral des Femmes et de la Jeunesse au sein du cabinet Kohl IV, de 1991 \u00E0 1994, avant de se voir confier, le minist\u00E8re f\u00E9d\u00E9ral de l'Environnement, de la Protection de la Nature et de la S\u00E9curit\u00E9 nucl\u00E9aire du cabinet Kohl V, jusqu'en 1998. Angela Merkel devient, en 2000, la premi\u00E8re femme pr\u00E9sidente de la CDU."@fr ,
 		"Angela Dorothea Merkel (n\u00E9e Kasner; born 17 July 1954) is a German politician and former research scientist who has been the Chancellor of Germany since 2005 and the Leader of the Christian Democratic Union (CDU) since 2000."@en .
+dbr:Angela_Merkel
+    dbo:birthPlace  dbr:West_Germany ,
+        dbr:Hamburg ;
+    dbp:birthPlace  dbr:Hamburg ,
+        dbr:West_Germany .
+dbr:Hamburg rdf:type dbo:Settlement.
+dbr:Angela_Merkel owl:sameAs	wikidata:Q567.
+wikidata:Q567 wdt:P21 wd:Q6581072.
+
+wikidata:Q6581072 rdfs:label "weiblich"@de.
+wikidata:Q6581072 rdfs:label "female"@en.
 
