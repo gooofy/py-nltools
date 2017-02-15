@@ -55,7 +55,7 @@ class TestSPARQLAlchemy (unittest.TestCase):
             self.sas.parse(data=data, context=self.context, format='n3')
 
     def test_import(self):
-        self.assertEqual (len(self.sas), 103)
+        self.assertEqual (len(self.sas), 116)
 
     def test_query_optional(self):
 
@@ -110,6 +110,62 @@ class TestSPARQLAlchemy (unittest.TestCase):
                 s += ' %s=%s' % (v, row[v])
             logging.debug('sparql result row: %s' % s)
 
+        sparql = """
+                 PREFIX rdfs:   <http://www.w3.org/2000/01/rdf-schema#>
+                 PREFIX rdf:    <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                 PREFIX schema: <http://schema.org/>
+                 PREFIX dbr:    <http://dbpedia.org/resource/>
+                 PREFIX dbo:    <http://dbpedia.org/ontology/>
+                 PREFIX owl:    <http://www.w3.org/2002/07/owl#> 
+                 PREFIX wdt:    <http://www.wikidata.org/prop/direct/> 
+                 SELECT ?label ?birthPlace ?wdgenderlabel
+                 WHERE {
+                     ?chancellor rdfs:label ?label.
+                     ?chancellor dbo:birthPlace ?birthPlace.
+                     ?chancellor rdf:type schema:Person.
+                     ?birthPlace rdf:type dbo:Settlement.
+                     ?chancellor owl:sameAs ?wdchancellor.
+                     ?wdchancellor wdt:P21 ?wdgender.
+                     ?wdgender rdfs:label ?wdgenderlabel.
+                     FILTER (lang(?label) = 'de')
+                     FILTER (lang(?wdgenderlabel) = 'de')
+                 }"""
+
+        res = self.sas.query(sparql)
+
+        self.assertEqual(len(res), 2)
+
+        for row in res:
+            s = ''
+            for v in res.vars:
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
+
+    def test_distinct(self):
+
+        sparql = """
+                 PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+                 PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+                 PREFIX schema: <http://schema.org/>
+                 PREFIX dbr: <http://dbpedia.org/resource/>
+                 PREFIX dbo: <http://dbpedia.org/ontology/>
+                 SELECT DISTINCT ?leader  
+                 WHERE {
+                     ?leader rdfs:label ?label. 
+                     ?leader rdf:type schema:Person.
+                 }
+                 """
+
+        res = self.sas.query(sparql)
+
+        self.assertEqual(len(res), 2)
+
+        for row in res:
+            s = ''
+            for v in res.vars:
+                s += ' %s=%s' % (v, row[v])
+            logging.debug('sparql result row: %s' % s)
+
         # SELECT ?temp_min ?temp_max ?precipitation ?clouds ?icon
         #                        WHERE {
         #                            ?wev hal:dt_end ?dt_end. 
@@ -122,6 +178,7 @@ class TestSPARQLAlchemy (unittest.TestCase):
         #                            ?wev hal:icon ?icon .
         #                            FILTER (?dt_start >= \"%s\"^^xsd:dateTime &&
         #                            ?dt_end   <= \"%s\"^^xsd:dateTime)
+
 # sparql_macro ('GERMAN_CHANCELLORS', "SELECT ?label ?leaderof
 #                                      WHERE {
 #                                          ?chancellor rdfs:label ?label.
@@ -131,14 +188,6 @@ class TestSPARQLAlchemy (unittest.TestCase):
 #                                          FILTER (lang(?label) = 'de')
 #                                      }", L, LEADEROF).
 # 
-# sparql_macro ('PERSON_BP', "SELECT ?label ?birthPlace 
-#                            WHERE {
-#                                ?chancellor rdfs:label ?label.
-#                                ?chancellor dbo:birthPlace ?birthPlace.
-#                                ?chancellor rdf:type schema:Person.
-#                                ?birthPlace rdf:type dbo:Settlement.
-#                                FILTER (lang(?label) = 'de')
-#                            }", L, BP).
 
 if __name__ == "__main__":
 

@@ -149,7 +149,7 @@ class SPARQLAlchemyStore(object):
                            'b_lang'    : ol,
                            'b_datatype': ot })
             cnt += 1
-            logging.debug('quad: %s' % repr(( s,p,o,context, ov, ot, ol)))
+            # logging.debug('quad: %s' % repr(( s,p,o,context, ov, ot, ol)))
 
         logging.debug('addN: %d quads to add.' % cnt)
 
@@ -234,7 +234,7 @@ class SPARQLAlchemyStore(object):
                 raise Exception ('unexpected key found: %s' % k)
 
     #
-    # convert a RelationalExpression to sqlalchemy operators
+    # convert an expression to sqlalchemy operators
     #
 
     def _expr2alchemy(self, node, var_map, var_lang, var_dts):
@@ -268,6 +268,18 @@ class SPARQLAlchemyStore(object):
                 raise Exception ('Builtin_LANG: argumented expected to be a variable.')
 
             res = var_lang[unicode(node['arg'])]
+
+        elif node.name == 'ConditionalAndExpression':
+
+            self._check_keys(node, set(['expr', 'other', '_vars']))
+
+            res = self._expr2alchemy(node['expr'], var_map, var_lang, var_dts)
+
+            for e in node['other']:
+                
+                o = self._expr2alchemy(e, var_map, var_lang, var_dts)
+
+                res = sql.and_(res, o)
 
         else:
 
@@ -311,7 +323,7 @@ class SPARQLAlchemyStore(object):
             for var_name in var_dts:
                 sel_list.append(var_dts[var_name].label(var_name + '_dt'))
 
-            res = sql.select(sel_list).select_from(p_stmt).distinct().alias()
+            res = sql.select(sel_list).select_from(p_stmt).alias()
 
             for var_name in var_map:
                 var_map[var_name] = res.c[var_name]
@@ -345,7 +357,7 @@ class SPARQLAlchemyStore(object):
             for var_name in var_dts:
                 sel_list.append(var_dts[var_name].label(var_name + '_dt'))
 
-            res = sql.select(sel_list).select_from(p_stmt).distinct().alias()
+            res = sql.select(sel_list).select_from(p_stmt).alias()
 
             for var_name in var_map:
                 var_map[var_name] = res.c[var_name]
@@ -371,7 +383,31 @@ class SPARQLAlchemyStore(object):
             for var_name in var_dts:
                 sel_list.append(var_dts[var_name].label(var_name + '_dt'))
 
-            res = sql.select(sel_list).select_from(p_stmt).where(expr).distinct().alias()
+            res = sql.select(sel_list).select_from(p_stmt).where(expr).alias()
+
+            for var_name in var_map:
+                var_map[var_name] = res.c[var_name]
+            for var_name in var_lang:
+                var_lang[var_name] = res.c[var_name + '_lang']
+            for var_name in var_dts:
+                var_dts[var_name] = res.c[var_name + '_dt']
+
+            logging.debug('Filter: res: %s' % res.compile(compile_kwargs={"literal_binds": True}))
+
+        elif node.name == 'Distinct':
+
+            self._check_keys(node, set(['p', '_vars']))
+            p_stmt, var_map, var_lang, var_dts = self._algebra2alchemy(node['p'])
+
+            sel_list = []
+            for var_name in var_map:
+                sel_list.append(var_map[var_name].label(var_name))
+            for var_name in var_lang:
+                sel_list.append(var_lang[var_name].label(var_name + '_lang'))
+            for var_name in var_dts:
+                sel_list.append(var_dts[var_name].label(var_name + '_dt'))
+
+            res = sql.select(sel_list).select_from(p_stmt).distinct().alias()
 
             for var_name in var_map:
                 var_map[var_name] = res.c[var_name]
