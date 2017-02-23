@@ -88,15 +88,15 @@ class TTSClient(object):
 
         response = requests.post(url, data=wav)
 
-    def say (self, utterance):
+    def say (self, utterance, async=False):
 
         wav = self.synthesize(utterance)
-        self.play_wav(wav)
+        self.play_wav(wav, async=async)
 
-    def say_ipa (self, ipa):
+    def say_ipa (self, ipa, async=False):
 
-        wav = self.synthesize(utterance, mode='ipa')
-        self.play_wav(wav)
+        wav = self.synthesize(ipa, mode='ipa')
+        self.play_wav(wav, async=async)
 
     def gen_ipa (self, word):
 
