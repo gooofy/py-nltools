@@ -79,10 +79,13 @@ class TTSClient(object):
 
         return wav
 
-    def play_wav (self, wav):
+    def play_wav (self, wav, async=False):
 
         url = 'http://%s:%s/tts/play' % (self.host_tts, self.port_tts)
                           
+        if async:
+            url += '?async=t'
+
         response = requests.post(url, data=wav)
 
     def say (self, utterance):
