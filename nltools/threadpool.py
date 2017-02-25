@@ -21,44 +21,61 @@
 # A simple thread pool implementation
 #
 
-from Queue import Queue
+import traceback
+
+from Queue import Queue, Empty
 from threading import Thread, Lock
 
 class Worker(Thread):
     """Thread executing tasks from a given tasks queue"""
-    def __init__(self, tasks):
+    def __init__(self, tasks, idx):
         Thread.__init__(self)
-        self.tasks = tasks
-        self.daemon = True
+        self.tasks  = tasks
+        self.idx    = idx
+        #self.daemon = True
+        self.finish = False
         self.start()
 
     def run(self):
-        while True:
-            func, args, kargs = self.tasks.get()
+        while not self.finish:
+
+            # print "worker #%2d" % self.idx
+
             try:
-                func(*args, **kargs)
-            except Exception, e:
-                traceback.print_exc()
-            finally:
-                self.tasks.task_done()
+                func, args, kargs = self.tasks.get(True, 0.1)
+                try:
+                    func(*args, **kargs)
+                except Exception, e:
+                    traceback.print_exc()
+                finally:
+                    self.tasks.task_done()
+
+            except Empty:
+                # print "worker #%2d empty" % self.idx
+                pass
+
 
 class ThreadPool:
     """Pool of threads consuming tasks from a queue"""
     def __init__(self, num_threads):
         self.tasks = Queue(num_threads)
         self.terminal_lock = Lock()
-        for _ in range(num_threads): Worker(self.tasks)
+        self.workers = []
+        for idx in range(num_threads): 
+            self.workers.append(Worker(self.tasks, idx))
 
     def add_task(self, func, *args, **kargs):
         """Add a task to the queue"""
         self.tasks.put((func, args, kargs))
 
-    def wait_completion(self):
-        """Wait for completion of all the tasks in the queue"""
-        self.tasks.join()
-
     def print_synced(self, s):
         self.terminal_lock.acquire()
         print s
         self.terminal_lock.release()
+
+    def shutdown(self):
+        self.tasks.join()
+        for worker in self.workers:
+            worker.finish = True
+            worker.join()
 
