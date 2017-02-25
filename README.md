@@ -12,7 +12,7 @@ Non-exhaustive liste of modules contained:
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
 * tokenizer: (as of this writing: german only) word tokenizer aimed at spoken language applications
-* sparqlalchemy: simple (buy hopefully reasonably efficient) implementation of an RDF triple store on top of SQLAlchemy
+* threadpool: simple thread pool implementation
 
 I plan to add modules as I need them in my AI projects.
 
