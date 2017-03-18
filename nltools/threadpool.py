@@ -22,6 +22,7 @@
 #
 
 import traceback
+import logging
 
 from Queue import Queue, Empty
 from threading import Thread, Lock
@@ -46,6 +47,7 @@ class Worker(Thread):
                 try:
                     func(*args, **kargs)
                 except Exception, e:
+                    logging.error('ThreadPool Worker caught exception: %s' % traceback.format_exc())
                     traceback.print_exc()
                 finally:
                     self.tasks.task_done()
@@ -58,7 +60,7 @@ class Worker(Thread):
 class ThreadPool:
     """Pool of threads consuming tasks from a queue"""
     def __init__(self, num_threads):
-        self.tasks = Queue(num_threads)
+        self.tasks = Queue()
         self.terminal_lock = Lock()
         self.workers = []
         for idx in range(num_threads): 
@@ -74,8 +76,13 @@ class ThreadPool:
         self.terminal_lock.release()
 
     def shutdown(self):
+        print "shutdown: tasks.join..."
         self.tasks.join()
-        for worker in self.workers:
-            worker.finish = True
-            worker.join()
+        print "shutdown: tasks.join...done. finishing workers..."
+        # for worker in self.workers:
+        #     worker.finish = True
+        #     worker.join()
+
+        print "shutdown complete."
+
 
