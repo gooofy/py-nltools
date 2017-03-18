@@ -30,6 +30,9 @@ import shutil
 import errno
 import curses
 import curses.textpad
+import traceback
+import code
+import signal
 
 from setproctitle import setproctitle
 from os.path import expanduser
@@ -43,6 +46,21 @@ def load_config(configfn = '.nlprc'):
 
     return config
 
+def _debug(sig, frame):
+    """Interrupt running process, and provide a python prompt for
+    interactive debugging.
+    
+    source: http://stackoverflow.com/questions/132058/showing-the-stack-trace-from-a-running-python-application
+    """
+    d={'_frame':frame}         # Allow access to frame object.
+    d.update(frame.f_globals)  # Unless shadowed by global
+    d.update(frame.f_locals)
+
+    i = code.InteractiveConsole(d)
+    message  = "Signal received : entering python shell.\nTraceback:\n"
+    message += ''.join(traceback.format_stack(frame))
+    i.interact(message)
+
 def init_app (proc_title):
 
     setproctitle (proc_title)
@@ -50,6 +68,11 @@ def init_app (proc_title):
     reload(sys)
     sys.setdefaultencoding('utf-8')
     sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+
+    # install signal handler so SIGUSR1 will enter pdb
+
+    signal.signal(signal.SIGUSR1, _debug)  # Register handler
+
 
 def compress_ws (s):
 
