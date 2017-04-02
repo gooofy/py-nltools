@@ -55,6 +55,8 @@ class TestTokenizer (unittest.TestCase):
 
         self.assertEqual (tokenize(u"b5 mal 3 in abc5"), [u'b5', u'mal', u'drei', u'in', u'abc5'])
 
+        self.assertEqual (tokenize(u"Mein Name ist HAL 9000."), [u'mein', u'name', u'ist', u'hal', u'neuntausend'])
+
     def test_ws(self):
         self.assertEqual (compress_ws('   ws   foo bar'), ' ws foo bar')
 

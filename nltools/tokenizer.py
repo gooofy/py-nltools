@@ -319,7 +319,7 @@ def spellout_number (m):
 
     res += zahl_in_worten(int(parts[0]))
 
-    if len(parts)>1:
+    if len(parts)>1 and len(parts[1])>0:
 
         # spell out fractional part in digits
 
