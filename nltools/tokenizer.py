@@ -25,6 +25,7 @@ import sys
 import re
 import unittest
 import logging
+from num2words import num2words
 
 def detect_latin1 (fn):
 
@@ -77,6 +78,155 @@ def isgalnum (s):
 
     return True
 
+#####################################################################
+#
+# tokenizer commons
+#
+#####################################################################
+
+NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
+NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
+
+PUNCTUATION = [
+    u',', u'.', u';', u':', 
+    u'?', u'!', 
+    u'+', u'-', u'*', u'#', u'=', u'|'
+    u'/', u'\\',  
+    u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
+    u'\'', u'"',
+]
+
+#####################################################################
+#
+# english tokenizer
+#
+#####################################################################
+
+# word replacement table
+wrt_en = { u'0'          : u'zero',
+           u'1'          : u'one'}
+
+symb_abbrev_norm_en = [
+                       (u'\ufeff'  , u' '),
+                       (u'\u2019'  , u"'"),
+                       (u'\xa0'    , u' '),
+                       (u'\u203a'  , u' '),
+                       (u'\u2039'  , u' '),
+                       (u'_'       , u' '),
+                       (u'&'       , u'and'),
+                       (u'\xa020'  , u' '),
+                       (u'„'       , u' '),
+                       (u'“'       , u' '),
+                       (u'$'       , u'dollar ')
+                      ]
+
+def spellout_number_en (m):
+
+    numstr = m.group(0)
+
+    if numstr[0].isspace():
+        numstr = numstr[1:]
+        res = ' '
+    else:
+        res = ''
+
+    if numstr[0] == '-':
+        res += 'minus '
+        numstr = numstr[1:].strip()
+
+    if not '.' in numstr:
+        numstr = numstr.replace(',','.')
+
+    parts = numstr.split ('.')
+
+    # print repr(parts)
+
+    res += num2words(int(parts[0]))
+
+    if len(parts)>1 and len(parts[1])>0:
+
+        # spell out fractional part in digits
+
+        res += ' point ' + num2words(int(parts[1]))
+
+    return res
+
+APOSTROPHE_S_PATTERN1 = re.compile(r"\w\w+[']s\s")
+APOSTROPHE_S_PATTERN2 = re.compile(r"\w\w+[']s$")
+
+def remove_apostrophe_s (m):
+
+    s = m.group(0)
+
+    return s.replace("'s", "s")
+
+APOSTROPHE_NT_PATTERN1 = re.compile(r"\wn[']t\s")
+APOSTROPHE_NT_PATTERN2 = re.compile(r"\wn[']t$")
+
+def remove_apostrophe_nt (m):
+
+    s = m.group(0)
+
+    return s.replace("n't", "nt")
+
+def tokenize_en (s, keep_punctuation=False):
+
+    global wrt_en, symb_abbrev_norm_en
+
+    for san in symb_abbrev_norm_en:
+        srch = san[0]
+        repl = san[1]
+
+        s = s.replace (srch, repl)
+
+    # deal with numbers
+    s = NUMBER_PATTERN_START.sub(spellout_number_en, s)
+    s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
+
+    # deal with apostrophe-s
+    s = APOSTROPHE_S_PATTERN1.sub(remove_apostrophe_s, s)
+    s = APOSTROPHE_S_PATTERN2.sub(remove_apostrophe_s, s)
+
+    # deal with apostrophe-nt
+    s = APOSTROPHE_NT_PATTERN1.sub(remove_apostrophe_nt, s)
+    s = APOSTROPHE_NT_PATTERN2.sub(remove_apostrophe_nt, s)
+
+    # deal with punctuation
+    if keep_punctuation:
+        for p in PUNCTUATION:
+            s = s.replace (p, u' ' + p + u' ')
+    else:
+        for p in PUNCTUATION:
+            s = s.replace(p,' ')
+
+    res = []
+
+    words = re.split ('\s+', s)
+
+    # print repr(words)
+
+    for word in words:
+
+        w = word.rstrip().replace(u'–',u'').lower()
+        if len(w) > 0:
+
+            if w in wrt_en:
+                w = wrt_en[w]
+        
+                words2 = re.split('\s+', w)
+                for w2 in words2:
+                    res.append(w2)
+
+            else:
+                res.append (w)
+
+    return res
+
+#####################################################################
+#
+# german tokenizer
+#
+#####################################################################
 
 # word replacement table
 wrt = { u'0'             : u'null',
@@ -280,20 +430,6 @@ def zahl_in_worten(n, s=True, z=False, e=False):
     logging.warn('zahl_in_worten: cannot handle %s' % n)
     return str(n)
 
-# #
-# # init number replacement dict
-# #
-# 
-# for i in range(10000):
-#     u = unicode(i)
-#     if not u in wrt:
-#         wrt[u] = zahl_in_worten(i)
-#     wrt[u'0'+u] = zahl_in_worten(i)
-#     wrt[u'00'+u] = zahl_in_worten(i)
-#     wrt[u'000'+u] = zahl_in_worten(i)
-
-
-
 def spellout_number (m):
 
     numstr = m.group(0)
@@ -330,21 +466,12 @@ def spellout_number (m):
     
     return res
 
-NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
-NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
-
-PUNCTUATION = [
-    u',', u'.', u';', u':', 
-    u'?', u'!', 
-    u'+', u'-', u'*', u'#', u'=', u'|'
-    u'/', u'\\',  
-    u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
-    u'\'', u'"',
-]
-
 def tokenize (s, lang='de', keep_punctuation=False):
 
     global wrt
+
+    if lang == 'en':
+        return tokenize_en(s, keep_punctuation)
 
     if lang != 'de':
         # FIXME

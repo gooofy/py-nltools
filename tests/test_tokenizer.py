@@ -116,6 +116,15 @@ class TestTokenizer (unittest.TestCase):
     def test_kill_umlauts(self):
         self.assertEqual (kill_umlauts(u'Ü ü Ö ö Ä ä ß'), 'Ue ue Oe oe Ae ae ss')
 
+    def test_tokenize_english(self):
+
+        self.assertEqual (tokenize(u"this module’s level", lang='en'), [u'this', u'modules', u'level'])
+        self.assertEqual (tokenize(u"$test sequences that don’t correspond can't", lang="en"), [ u"dollar", u"test", u"sequences", u"that", u"dont", u"correspond", u"cant" ])
+
+    def test_tokenize_numbers_english(self):
+        self.assertEqual (tokenize(u"1 2 3 4", lang='en'), ["one", "two", "three", "four"])
+        self.assertEqual (tokenize(u"00 01 02 03 04", lang='en'), ["zero", "one", "two", "three", "four"])
+
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.ERROR)
