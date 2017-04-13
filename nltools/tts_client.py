@@ -73,7 +73,8 @@ class TTSClient(object):
 
         response = requests.get(url)
 
-        assert response.status_code == 200
+        if response.status_code != 200:
+            return None
 
         wav = response.content
 
@@ -108,8 +109,8 @@ class TTSClient(object):
 
         response = requests.get(url)
 
-        assert response.status_code == 200
+        if response.status_code != 200:
+            return None
 
         return response.json()['ipa']
-
 
