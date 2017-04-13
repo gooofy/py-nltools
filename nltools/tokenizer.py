@@ -104,7 +104,9 @@ PUNCTUATION = [
 
 # word replacement table
 wrt_en = { u'0'          : u'zero',
-           u'1'          : u'one'}
+           u'1'          : u'one',
+           u'colour'     : u'color',
+         }
 
 symb_abbrev_norm_en = [
                        (u'\ufeff'  , u' '),
@@ -320,6 +322,7 @@ wrt = { u'0'             : u'null',
         u'philipp'       : u'philip',
         u'millenium'     : u'millennium',
         u'stop'          : u'stopp',
+        u'colour'        : u'color',
         u'§'             : u'paragraph'}
 
 
