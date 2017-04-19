@@ -88,12 +88,16 @@ NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
 NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
 
 PUNCTUATION = [
-    u',', u'.', u';', u':', 
+    u',', u'.', u';',  
     u'?', u'!', 
     u'+', u'-', u'*', u'#', u'=', u'|'
     u'/', u'\\',  
     u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
     u'\'', u'"',
+]
+
+MACRO_PUNCTUATION = [
+    u'@', u':', u'_' 
 ]
 
 #####################################################################
@@ -114,7 +118,6 @@ symb_abbrev_norm_en = [
                        (u'\xa0'    , u' '),
                        (u'\u203a'  , u' '),
                        (u'\u2039'  , u' '),
-                       (u'_'       , u' '),
                        (u'&'       , u'and'),
                        (u'\xa020'  , u' '),
                        (u'„'       , u' '),
@@ -171,7 +174,7 @@ def remove_apostrophe_nt (m):
 
     return s.replace("n't", "nt")
 
-def tokenize_en (s, keep_punctuation=False):
+def tokenize_en (s, keep_punctuation=False, keep_macros=False):
 
     global wrt_en, symb_abbrev_norm_en
 
@@ -200,6 +203,9 @@ def tokenize_en (s, keep_punctuation=False):
     else:
         for p in PUNCTUATION:
             s = s.replace(p,' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace(p,' ')
 
     res = []
 
@@ -391,7 +397,6 @@ symb_abbrev_norm = [
         (u'\xa0'    , u' '),
         (u'\u203a'  , u' '),
         (u'\u2039'  , u' '),
-        (u'_'       , u' '),
         (u'&'       , u'und'),
         (u'\xa020'  , u' '),
         (u'„'       , u' '),
@@ -471,22 +476,26 @@ def spellout_number (m):
     
     return res
 
-def tokenize (s, lang='de', keep_punctuation=False):
+def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False):
 
     global wrt
 
     if lang == 'en':
-        return tokenize_en(s, keep_punctuation)
+        return tokenize_en(s, keep_punctuation, keep_macros)
 
     if lang != 'de':
         # FIXME
         raise Exception ("FIXME: implement tokenizer support for language: " + lang)
+
+    # print '#1', s
 
     for san in symb_abbrev_norm:
         srch = san[0]
         repl = san[1]
 
         s = s.replace (srch, repl)
+
+    # print '#2', s
 
     # deal with numbers
     s = NUMBER_PATTERN_START.sub(spellout_number, s)
@@ -499,6 +508,11 @@ def tokenize (s, lang='de', keep_punctuation=False):
     else:
         for p in PUNCTUATION:
             s = s.replace(p,' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace(p,' ')
+
+    # print '#3', s
 
     res = []
 

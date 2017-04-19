@@ -69,6 +69,10 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"00 01 02 03 04"), ["null", "eins", "zwei", "drei", "vier"])
         self.assertEqual (tokenize(u"z.B. u. U. Prof. Dr. Dipl. Ing."), [u'zum', u'beispiel', u'unter', u'umständen', u'professor', u'doktor', u'diplom', u'ingenieur'])
 
+    def test_preserve_macros(self):
+        self.assertEqual (tokenize(u"was ist @ARTICLE:W name von @KNOWN_PERSON_DE:LABEL", keep_macros=True), [u"was", u"ist", u"@article:w", u"name", u"von", u"@known_person_de:label"])
+        self.assertEqual (tokenize(u"what is @ARTICLE:W name of @KNOWN_PERSON_DE:LABEL", lang='en', keep_macros=True), [u"what", u"is", u"@article:w", u"name", u"of", u"@known_person_de:label"])
+
     def test_zahl_in_worten(self):
 
         for i in range(10000):
