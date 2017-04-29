@@ -187,6 +187,16 @@ def edit_distance (s, t):
   
     return d[m][n]
 
+def limit_str(s, limit):
+
+    l = len(s)
+
+    if l<=limit:
+        return s
+
+    return s[:l-4] + '...'
+
+
 #
 # curses utils
 #

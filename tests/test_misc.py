@@ -61,6 +61,11 @@ class TestMisc (unittest.TestCase):
         self.assertEqual(misc.edit_distance('hubba', 'hub'), 2)
         self.assertEqual(misc.edit_distance('hubba', 'bba'), 2)
 
+    def test_limit_str(self):
+
+        self.assertEqual(misc.limit_str('1234567890', 10), '1234567890')
+        self.assertEqual(misc.limit_str('1234567890',  9), '123456...')
+
 if __name__ == "__main__":
 
     logging.basicConfig(level=logging.ERROR)
