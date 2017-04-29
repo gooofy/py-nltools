@@ -194,7 +194,9 @@ def limit_str(s, limit):
     if l<=limit:
         return s
 
-    return s[:l-4] + '...'
+    l = limit-3
+
+    return s[:l] + '...'
 
 
 #
