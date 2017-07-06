@@ -158,21 +158,53 @@ def spellout_number_en (m):
 
 APOSTROPHE_S_PATTERN1 = re.compile(r"\w\w+[']s\s")
 APOSTROPHE_S_PATTERN2 = re.compile(r"\w\w+[']s$")
+APOSTROPHE_S_PATTERN3 = re.compile(r"\w\w+[']s[,.;:]")
 
-def remove_apostrophe_s (m):
+def protect_apostrophe_s (m):
 
     s = m.group(0)
 
-    return s.replace("'s", "s")
+    return s.replace(u"'s", u"✓s")
 
 APOSTROPHE_NT_PATTERN1 = re.compile(r"\wn[']t\s")
 APOSTROPHE_NT_PATTERN2 = re.compile(r"\wn[']t$")
+APOSTROPHE_NT_PATTERN3 = re.compile(r"\wn[']t[,.;:]")
 
-def remove_apostrophe_nt (m):
+def protect_apostrophe_nt (m):
 
     s = m.group(0)
 
-    return s.replace("n't", "nt")
+    return s.replace(u"n't", u"n✓t")
+
+APOSTROPHE_D_PATTERN1 = re.compile(r"\w[']d\s")
+APOSTROPHE_D_PATTERN2 = re.compile(r"\w[']d$")
+APOSTROPHE_D_PATTERN3 = re.compile(r"\w[']d[,.;:]")
+
+def protect_apostrophe_d (m):
+
+    s = m.group(0)
+
+    return s.replace(u"'d", u"✓d")
+
+APOSTROPHE_RE_PATTERN1 = re.compile(r"\w[']re\s")
+APOSTROPHE_RE_PATTERN2 = re.compile(r"\w[']re$")
+APOSTROPHE_RE_PATTERN3 = re.compile(r"\w[']re[,.;:]")
+
+def protect_apostrophe_re (m):
+
+    s = m.group(0)
+
+    return s.replace(u"'re", u"✓re")
+
+APOSTROPHE_LL_PATTERN1 = re.compile(r"\w[']ll\s")
+APOSTROPHE_LL_PATTERN2 = re.compile(r"\w[']ll$")
+APOSTROPHE_LL_PATTERN3 = re.compile(r"\w[']ll[,.;:]")
+
+def protect_apostrophe_ll (m):
+
+    s = m.group(0)
+
+    return s.replace(u"'ll", u"✓ll")
 
 def tokenize_en (s, keep_punctuation=False, keep_macros=False):
 
@@ -189,12 +221,33 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
     s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
 
     # deal with apostrophe-s
-    s = APOSTROPHE_S_PATTERN1.sub(remove_apostrophe_s, s)
-    s = APOSTROPHE_S_PATTERN2.sub(remove_apostrophe_s, s)
+    s = APOSTROPHE_S_PATTERN1.sub(protect_apostrophe_s, s)
+    s = APOSTROPHE_S_PATTERN2.sub(protect_apostrophe_s, s)
+    s = APOSTROPHE_S_PATTERN3.sub(protect_apostrophe_s, s)
 
     # deal with apostrophe-nt
-    s = APOSTROPHE_NT_PATTERN1.sub(remove_apostrophe_nt, s)
-    s = APOSTROPHE_NT_PATTERN2.sub(remove_apostrophe_nt, s)
+    s = APOSTROPHE_NT_PATTERN1.sub(protect_apostrophe_nt, s)
+    s = APOSTROPHE_NT_PATTERN2.sub(protect_apostrophe_nt, s)
+    s = APOSTROPHE_NT_PATTERN3.sub(protect_apostrophe_nt, s)
+
+    # deal with apostrophe-d (I'd we'd)
+    s = APOSTROPHE_D_PATTERN1.sub(protect_apostrophe_d, s)
+    s = APOSTROPHE_D_PATTERN2.sub(protect_apostrophe_d, s)
+    s = APOSTROPHE_D_PATTERN3.sub(protect_apostrophe_d, s)
+
+    # deal with apostrophe-re (we're they're)
+    s = APOSTROPHE_RE_PATTERN1.sub(protect_apostrophe_re, s)
+    s = APOSTROPHE_RE_PATTERN2.sub(protect_apostrophe_re, s)
+    s = APOSTROPHE_RE_PATTERN3.sub(protect_apostrophe_re, s)
+
+    # deal with apostrophe-ll (we'll they'll)
+    s = APOSTROPHE_LL_PATTERN1.sub(protect_apostrophe_ll, s)
+    s = APOSTROPHE_LL_PATTERN2.sub(protect_apostrophe_ll, s)
+    s = APOSTROPHE_LL_PATTERN3.sub(protect_apostrophe_ll, s)
+
+    # I'm, I've
+    s = s.replace (u"I'm", u'I✓m')
+    s = s.replace (u"I've", u'I✓ve')
 
     # deal with punctuation
     if keep_punctuation:
@@ -206,6 +259,9 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
         if not keep_macros:
             for p in MACRO_PUNCTUATION:
                 s = s.replace(p,' ')
+
+    # re-insert apostrophes
+    s = s.replace (u'✓', u"'")
 
     res = []
 

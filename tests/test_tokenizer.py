@@ -122,8 +122,11 @@ class TestTokenizer (unittest.TestCase):
 
     def test_tokenize_english(self):
 
-        self.assertEqual (tokenize(u"this module’s level", lang='en'), [u'this', u'modules', u'level'])
-        self.assertEqual (tokenize(u"$test sequences that don’t correspond can't", lang="en"), [ u"dollar", u"test", u"sequences", u"that", u"dont", u"correspond", u"cant" ])
+        self.assertEqual (tokenize(u"this module’s level", lang='en'), [u'this', u"module's", u'level'])
+        self.assertEqual (tokenize(u"$test sequences that don’t correspond can't", lang="en"), [ u"dollar", u"test", u"sequences", u"that", u"don't", u"correspond", u"can't" ])
+        self.assertEqual (tokenize(u"but I can't and I'm good.", lang='en'), [u'but', u'i', u"can't", u"and", u"i'm", u"good"])
+        self.assertEqual (tokenize(u"we're good she'd do that.", lang='en'), [u"we're", u"good", u"she'd", u"do", u"that"])
+        self.assertEqual (tokenize(u"we'll be good.", lang='en'), [u"we'll", u"be", u"good"])
 
     def test_tokenize_numbers_english(self):
         self.assertEqual (tokenize(u"1 2 3 4", lang='en'), ["one", "two", "three", "four"])
