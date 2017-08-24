@@ -25,7 +25,14 @@
 import sys
 import os
 import subprocess
-import ConfigParser
+try:
+    import ConfigParser as configparser
+except ImportError:
+    import configparser
+try:
+    from imp import reload
+except ImportError:
+    pass
 import shutil
 import errno
 import curses
@@ -41,7 +48,7 @@ def load_config(configfn = '.nlprc'):
 
     home_path = expanduser("~")
 
-    config = ConfigParser.RawConfigParser()
+    config = configparser.RawConfigParser()
     config.read("%s/%s" % (home_path, configfn))
 
     return config
@@ -65,9 +72,10 @@ def init_app (proc_title):
 
     setproctitle (proc_title)
 
-    reload(sys)
-    sys.setdefaultencoding('utf-8')
-    sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
+    if sys.version_info < (3, 0):
+        reload(sys)
+        sys.setdefaultencoding('utf-8')
+        sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', 0)
 
     # install signal handler so SIGUSR1 will enter pdb
 
@@ -140,9 +148,9 @@ def tex_decode (s):
 def symlink(targetfn, linkfn):
     try:
         os.symlink(targetfn, linkfn)
-    except OSError, e:
+    except OSError as e:
         if e.errno == errno.EEXIST:
-            print 'symlink', targetfn, '->', linkfn, 'already exists'
+            logging.debug('symlink %s -> %s already exists' % (targetfn, linkfn))
 
 def mkdirs(path):
     try:
@@ -152,7 +160,7 @@ def mkdirs(path):
             raise
 
 def copy_file (src, dst):
-    print "copying %s to %s" % (src, dst)
+    logging.debug("copying %s to %s" % (src, dst))
     shutil.copy(src, dst)
 
 
