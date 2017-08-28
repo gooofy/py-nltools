@@ -44,11 +44,11 @@ import signal
 from setproctitle import setproctitle
 from os.path import expanduser
 
-def load_config(configfn = '.nlprc'):
+def load_config(configfn = '.nlprc', defaults={}):
 
     home_path = expanduser("~")
 
-    config = configparser.RawConfigParser()
+    config = configparser.ConfigParser(defaults)
     config.read("%s/%s" % (home_path, configfn))
 
     return config
