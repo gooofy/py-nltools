@@ -24,10 +24,12 @@
 
 import traceback
 import json
-from base64 import b64encode
 import logging
 import requests
 import urllib
+
+from base64                 import b64encode
+from nltools.pulseplayer    import PulsePlayer
 
 MARY_VOICES = {
 
@@ -45,13 +47,16 @@ ESPEAK_VOICES = ['en', 'de']
 
 class TTSClient(object):
 
-    def __init__(self, host_tts='localhost', port_tts=8300, locale='en_US', engine='mary', voice='cmu-rms-hsmm'):
+    def __init__(self, host_tts='local', port_tts=8300, locale='en_US', engine='mary', voice='cmu-rms-hsmm'):
 
         self.host_tts = host_tts
         self.port_tts = port_tts
         self.locale  = locale
         self.engine = engine
         self.voice  = voice
+
+        if host_tts == 'local':
+            self.player = PulsePlayer('Local TTS Client')
 
     def set_locale(self, locale):
         self.locale = locale
@@ -82,12 +87,18 @@ class TTSClient(object):
 
     def play_wav (self, wav, async=False):
 
-        url = 'http://%s:%s/tts/play' % (self.host_tts, self.port_tts)
-                          
-        if async:
-            url += '?async=t'
+        if self.host_tts == 'local':
 
-        response = requests.post(url, data=wav)
+            self.player.play(wav, async)
+
+        else:
+
+            url = 'http://%s:%s/tts/play' % (self.host_tts, self.port_tts)
+                          
+            if async:
+                url += '?async=t'
+
+            response = requests.post(url, data=wav)
 
     def say (self, utterance, async=False):
 
