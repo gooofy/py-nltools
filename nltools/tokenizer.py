@@ -540,6 +540,8 @@ wrt = { u'0'             : u'null',
 
         u'spass'            : u'spaß',
         u'weisst'           : u'weißt',
+        u'schliesse'        : u'schließe',
+        u'schliessen'       : u'schließen',
 
         u'§'                : u'paragraph'}
 
