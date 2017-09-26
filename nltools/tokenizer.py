@@ -561,7 +561,6 @@ symb_abbrev_norm = [
         (u'bspw '   , u'beispielsweise '),
         (u'bzgl.'   , u'bezüglich '),
         (u'ca.'     , u'circa '),
-        (u'ca '     , u'circa '),
         (u'd.h.'    , u'das heißt '),
         (u'd. h.'   , u'das heißt '),
         (u'Dr. '    , u'doktor '),

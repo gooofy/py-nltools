@@ -40,8 +40,8 @@ class TestTokenizer (unittest.TestCase):
 
     def test_tokenize_wrt(self):
 
-        self.assertEqual (tokenize(u"circa"), [u'circa'])
-
+        self.assertEqual (tokenize(u"foo circa bar"), [u'foo', u'circa', u'bar'])
+        
     def test_tokenize_punctuation(self):
 
         self.assertEqual (tokenize(u"abc, def. zzz!   (      abc<?)"), [u'abc', u'def', u'zzz', u'abc'])
