@@ -7,11 +7,11 @@ to replace those.
 Non-exhaustive liste of modules contained:
 
 * phonetics: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
-* espeakclient: g2p and speech synthesis using espeak
+* tts\_client: abstraction layer towards using eSpeak NG, MaryTTS or a remote TTS server and sequitur g2p
 * maryclient: g2p and speech synthesis using Mary TTS
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
-* tokenizer: (as of this writing: german only) word tokenizer aimed at spoken language applications
+* tokenizer: english and german word tokenizer aimed at spoken language applications
 * threadpool: simple thread pool implementation
 
 I plan to add modules as I need them in my AI projects.
@@ -20,17 +20,18 @@ I plan to add modules as I need them in my AI projects.
 Requirements
 ============
 
-*Note*: very incomplete.
+*Note*: probably incomplete.
 
 * Python 2.7 
 * Mary TTS
-* espeak
+* espeak-ng, py-espeak-ng
+* sequitur
 * pulseaudio
 
 License
 =======
 
-My own code is LGPLv3 licensed unless otherwise noted in the scritp's copyright
+My own code is LGPLv3 licensed unless otherwise noted in the script's copyright
 headers.
 
 Some scripts and files are based on works of others, in those cases it is my

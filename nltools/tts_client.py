@@ -30,6 +30,10 @@ import urllib
 
 from base64                 import b64encode
 from nltools.pulseplayer    import PulsePlayer
+from nltools.maryclient     import mary_init, mary_set_voice, mary_set_locale, mary_synth,\
+                                   mary_synth_phonemes, mary_gen_phonemes
+from nltools.phonetics      import ipa2mary, mary2ipa, ipa2xsampa, xsampa2ipa
+from espeakng               import ESpeakNG
 
 MARY_VOICES = {
 
@@ -41,9 +45,10 @@ MARY_VOICES = {
                'female': ["bits1-hsmm"]
              }
     }
+DEFAULT_MARY_VOICE   = 'cmu-rms-hsmm'
+DEFAULT_MARY_LOCALE  = 'en_US'
 
-ESPEAK_VOICES = ['en', 'de']
-
+ESPEAK_VOICES = ['english-us', 'de']
 
 class TTSClient(object):
 
@@ -56,7 +61,14 @@ class TTSClient(object):
         self.voice  = voice
 
         if host_tts == 'local':
+
             self.player = PulsePlayer('Local TTS Client')
+
+            mary_init()
+            mary_set_voice  (DEFAULT_MARY_VOICE)
+            mary_set_locale (DEFAULT_MARY_LOCALE)
+
+            self.espeak = ESpeakNG()
 
     def set_locale(self, locale):
         self.locale = locale
@@ -67,21 +79,63 @@ class TTSClient(object):
     def set_engine(self, engine):
         self.engine = engine
 
-    def synthesize(self, utterance, mode='txt'):
+    def synthesize(self, txt, mode='txt'):
 
-        args = {'l': self.locale,
-                'v': self.voice,
-                'e': self.engine,
-                'm': mode,
-                't': utterance.encode('utf8')}
-        url = 'http://%s:%s/tts/synth?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+        if self.host_tts == 'local':
 
-        response = requests.get(url)
+            wav = None
 
-        if response.status_code != 200:
-            return None
+            if self.engine == 'mary':
 
-        wav = response.content
+                mary_set_voice  (self.voice)
+                mary_set_locale (self.locale)
+
+                if mode == 'txt':
+                    wav = mary_synth (txt)
+                elif mode == 'ipa':
+                    xs = ipa2mary ('ipa', txt)
+                    wav = mary_synth_phonemes (xs)
+                else:
+                    raise Exception ("unknown mary mode '%s'" % mode)
+
+            elif self.engine == 'espeak':
+
+                if mode == 'txt':
+
+                    self.espeak.voice = self.voice
+                    wav = self.espeak.synth_wav (txt)
+
+                elif mode == 'ipa':
+                    xs = ipa2xsampa ('ipa', txt)
+                    logging.debug ('synthesize: %s %s -> %s' % (txt, mode, repr(xs)))
+                    wav = self.espeak.synth_wav (xs, fmt='xs')
+
+                else:
+                    raise Exception ("unknown espeak mode '%s'" % mode)
+            else:
+
+                raise Exception ("unknown engine '%s'" % self.engine)
+
+        else:
+
+            args = {'l': self.locale,
+                    'v': self.voice,
+                    'e': self.engine,
+                    'm': mode,
+                    't': txt.encode('utf8')}
+            url = 'http://%s:%s/tts/synth?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+
+            response = requests.get(url)
+
+            if response.status_code != 200:
+                return None
+
+            wav = response.content
+
+        if wav:
+            logging.debug ('synthesize: %s %s -> WAV' % (txt, mode))
+        else:
+            logging.error ('synthesize: %s %s -> NO WAV' % (txt, mode))
 
         return wav
 
@@ -89,7 +143,10 @@ class TTSClient(object):
 
         if self.host_tts == 'local':
 
-            self.player.play(wav, async)
+            if wav:
+                self.player.play(wav, async)
+            else:
+                raise Exception ('no wav given')
 
         else:
 
@@ -112,16 +169,49 @@ class TTSClient(object):
 
     def gen_ipa (self, word):
 
-        args = {'l': self.locale,
-                'v': self.voice,
-                'e': self.engine,
-                't': word.encode('utf8')}
-        url = 'http://%s:%s/tts/g2p?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+        if self.host_tts == 'local':
 
-        response = requests.get(url)
+            if self.engine == 'mary':
 
-        if response.status_code != 200:
-            return None
+                mary_set_voice  (self.voice)
+                mary_set_locale (self.locale)
 
-        return response.json()['ipa']
+                mp = mary_gen_phonemes (word)
+                return mary2ipa(word, mp)
+
+            elif self.engine == 'espeak':
+
+                self.espeak.voice = self.voice
+                e_ipa = self.espeak.g2p (word, ipa='2')
+                xs = ipa2xsampa(word, e_ipa)
+                ipa = xsampa2ipa(word, xs)
+
+                logging.debug (u'espeak g2p: %s -> %s -> %s -> %s' % (word, e_ipa, xs, ipa))
+
+                return ipa
+
+            elif self.engine == 'sequitur':
+
+                if not self.voice in SEQUITUR_MODELS:
+                    raise Exception ("no sequitur model for voice '%s'" % self.voice)
+
+                return sequitur_gen_ipa (SEQUITUR_MODELS[self.voice], word)
+
+            else:
+                raise Exception ("unknown engine '%s'" % self.engine)
+
+
+        else:
+            args = {'l': self.locale,
+                    'v': self.voice,
+                    'e': self.engine,
+                    't': word.encode('utf8')}
+            url = 'http://%s:%s/tts/g2p?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+
+            response = requests.get(url)
+
+            if response.status_code != 200:
+                return None
+
+            return response.json()['ipa']
 
