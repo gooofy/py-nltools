@@ -134,6 +134,12 @@ big_phoneme_table = [
         ( u'ː' , ':' , ':' ),
         ( u'-' , '-' , '-' ),
         ( u'\'' , '\'' , '\'' ),
+
+        #
+        # noise
+        #
+
+        ( u'#' , 'nC' , 'nC' ),
     ]
 
 IPA_normalization = {
