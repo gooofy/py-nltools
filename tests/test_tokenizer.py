@@ -38,6 +38,10 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"„kamel“"), [u'kamel'])
         self.assertEqual (tokenize(u"$test"), [u'dollar', u'test'])
 
+    def test_tokenize_wrt(self):
+
+        self.assertEqual (tokenize(u"circa"), [u'circa'])
+
     def test_tokenize_punctuation(self):
 
         self.assertEqual (tokenize(u"abc, def. zzz!   (      abc<?)"), [u'abc', u'def', u'zzz', u'abc'])

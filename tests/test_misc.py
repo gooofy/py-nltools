@@ -29,9 +29,9 @@ class TestMisc (unittest.TestCase):
 
         cfg = misc.load_config('.speechrc')
 
-        port = int(cfg.get('tts', 'port'))
+        host = cfg.get('tts', 'host')
 
-        self.assertEqual (port, 8300)
+        self.assertEqual (host, 'local')
 
 
     def test_compress_ws(self):

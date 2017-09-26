@@ -157,6 +157,7 @@ IPA_normalization = {
         u'\u02cc' : None,
         u'\u200d' : None,
         u'\u0279' : None,
+        u'\u0361' : None,
     }
 
 IPA_vowels = set([
