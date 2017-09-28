@@ -38,6 +38,7 @@ import errno
 import curses
 import curses.textpad
 import traceback
+import logging
 import code
 import signal
 
