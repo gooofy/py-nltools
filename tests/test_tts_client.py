@@ -25,8 +25,8 @@
 import unittest
 import logging
 
-from nltools.tts_client import TTSClient
-from nltools import misc
+from nltools.tts import TTS
+from nltools     import misc
 
 MARY_TESTS = [
               ('de_DE', 'bits3',            u'UNMUTE',           u"'\u0294\u028an-'mu\u02d0-t\u0259"),
@@ -40,13 +40,13 @@ ESPEAK_TESTS = [
                 ('de', u'GELBSEIDENEN',     u"g'\u025blbza\u026ad\u0259n\u0259n"),
                 ('de', u'UNMUTE',           u"'\u028anmu\u02d0t\u0259"),
                ]
-class TestTTSClient (unittest.TestCase):
+class TestTTS (unittest.TestCase):
 
-    def test_tts_client(self):
+    def test_tts(self):
 
         config = misc.load_config('.speechrc')
         
-        tts = TTSClient(config.get('tts', 'host'), int(config.get('tts', 'port')))
+        tts = TTS(config.get('tts', 'host'), int(config.get('tts', 'port')))
 
         # test mary
 
