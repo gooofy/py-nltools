@@ -76,6 +76,7 @@ class TestTTS (unittest.TestCase):
 
         tts.set_engine('espeak')
 
+        first = True
         for v, word, ph in ESPEAK_TESTS:
 
             tts.set_locale(v)
@@ -93,13 +94,15 @@ class TestTTS (unittest.TestCase):
             logging.debug('wav len: %d bytes.' % len(wav))
             self.assertGreater (len(wav), 100)
 
-            # tts.say (word)
+            if first:
+                tts.say (word)
+                first = False
             # tts.play_wav(wav)
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.ERROR)
-    # logging.basicConfig(level=logging.DEBUG)
+    # logging.basicConfig(level=logging.ERROR)
+    logging.basicConfig(level=logging.DEBUG)
 
     unittest.main()
 
