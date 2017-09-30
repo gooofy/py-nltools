@@ -23,7 +23,7 @@
 
 import StringIO
 import wave
-
+import copy
 import ctypes
 import wave
 import sys
@@ -37,19 +37,54 @@ PA_STREAM_PLAYBACK = 1
 PA_SAMPLE_S16LE = 3
 BUFFSIZE = 1024
 
-class struct_pa_sample_spec(ctypes.Structure):
-    __slots__ = [
-        'format',
-        'rate',
-        'channels',
-    ]
- 
-struct_pa_sample_spec._fields_ = [
-    ('format', ctypes.c_int),
-    ('rate', ctypes.c_uint32),
-    ('channels', ctypes.c_uint8),
-]
-pa_sample_spec = struct_pa_sample_spec  # /usr/include/pulse/sample.h:174
+# class struct_pa_sample_spec(ctypes.Structure):
+#     __slots__ = [
+#         'format',
+#         'rate',
+#         'channels',
+#     ]
+#  
+# struct_pa_sample_spec._fields_ = [
+#     ('format', ctypes.c_int),
+#     ('rate', ctypes.c_uint32),
+#     ('channels', ctypes.c_uint8),
+# ]
+# pa_sample_spec = struct_pa_sample_spec  # /usr/include/pulse/sample.h:174
+
+
+class pa_sample_spec(ctypes.Structure):
+    _fields_ = [
+                ('format',   ctypes.c_int),
+                ('rate',     ctypes.c_uint32),
+                ('channels', ctypes.c_uint8),
+            ]
+
+pa_simple_new = pa.pa_simple_new
+pa_simple_new.restype  = ctypes.c_void_p # pointer(pa_simple)
+pa_simple_new.argtypes = [
+                          ctypes.c_char_p,                   # server
+                          ctypes.c_char_p,                   # name,
+                          ctypes.c_int,                      # dir,
+                          ctypes.c_char_p,                   # dev,
+                          ctypes.c_char_p,                   # stream_name,
+                          ctypes.POINTER( pa_sample_spec ),  # ss,
+                          ctypes.c_void_p, # pointer( pa_channel_map ),  # map,
+                          ctypes.c_void_p, # pointer( pa_buffer_attr ),  # attr,
+                          ctypes.POINTER(ctypes.c_int),      # error
+                         ]
+
+pa_simple_write = pa.pa_simple_write
+pa_simple_write.restype = ctypes.c_int
+pa_simple_write.argtypes = [
+                            ctypes.c_void_p,              # s
+                            ctypes.c_void_p,              # data,
+                            ctypes.c_size_t,              # bytes,
+                            ctypes.POINTER(ctypes.c_int), # error 
+                           ]
+
+pa_simple_free = pa.pa_simple_free
+pa_simple_free.restype = None
+pa_simple_free.argtypes = [ ctypes.c_void_p ]
 
 class PulsePlayer:
 
@@ -77,18 +112,16 @@ class PulsePlayer:
             if buf == '':
                 break
 
-            # logging.debug("_play_loop len: %d" % len(buf))
+            # logging.debug("_play_loop len: %d self.s: %s" % (len(buf), repr(self.s)))
         
-            if pa.pa_simple_write(self.s, buf, len(buf), self.error):
-                raise Exception('Could not play file!')
+            if pa_simple_write(self.s, buf, len(buf), ctypes.byref(self.error)):
+                raise Exception('Could not play file, error: %d!' % self.error.value)
         
         self.wf.close()
 
-        
-        #print "free..."
-
         # Freeing resources and closing connection.
-        pa.pa_simple_free(self.s)
+        logging.debug ('pa.pa_simple_free %s...' % repr(self.s))
+        pa_simple_free(self.s)
 
         self.lock.acquire()
         try:
@@ -113,11 +146,11 @@ class PulsePlayer:
 
             self.terminate = False
             self.playing   = True
-            self.a_sound   = a_sound
+            self.a_sound   = copy.copy(a_sound)
 
             self.wf = wave.open(StringIO.StringIO(self.a_sound), 'rb')
 
-            self.ss = struct_pa_sample_spec()
+            self.ss = pa_sample_spec()
 
             self.ss.rate      = self.wf.getframerate()
             self.ss.channels  = self.wf.getnchannels()
@@ -127,7 +160,7 @@ class PulsePlayer:
 
             self.error = ctypes.c_int(0)
     
-            self.s = pa.pa_simple_new(
+            self.s = pa_simple_new(
                 None,                    # Default server.
                 self.name,               # Application's name.
                 PA_STREAM_PLAYBACK,      # Stream for playback.
@@ -141,6 +174,9 @@ class PulsePlayer:
             if not self.s:
                 raise Exception('Could not create pulse audio stream: {0}!'.format(
                     pa.strerror(ctypes.byref(self.error))))
+
+            logging.debug ('pa_simple_new done, self.s: %s' % repr(self.s))
+
         finally:
             self.lock.release()
 
