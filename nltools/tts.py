@@ -53,36 +53,66 @@ ESPEAK_VOICES = ['english-us', 'de']
 
 class TTS(object):
 
-    def __init__(self, host_tts='local', port_tts=8300, locale='en_US', engine='mary', voice='cmu-rms-hsmm'):
+    def __init__(self, 
+                 host_tts    =        'local', 
+                 port_tts    =           8300, 
+                 locale      =        'en_US', 
+                 engine      =         'mary', 
+                 voice       = 'cmu-rms-hsmm',
+                 pitch       =             50,  # 0-99
+                 speed       =            175): # approx. words per minute
 
-        self.host_tts = host_tts
-        self.port_tts = port_tts
-        self.locale  = locale
-        self.engine = engine
-        self.voice  = voice
+        self._host_tts = host_tts
+        self._port_tts = port_tts
+        self._locale   = locale
+        self._engine   = engine
+        self._voice    = voice
+        self._pitch    = pitch
+        self._speed    = speed
 
         if host_tts == 'local':
-
             self.player = PulsePlayer('Local TTS Client')
-
             mary_init()
-            mary_set_voice  (DEFAULT_MARY_VOICE)
-            mary_set_locale (DEFAULT_MARY_LOCALE)
-
             self.espeak = ESpeakNG()
 
-    def set_locale(self, locale):
-        self.locale = locale
+    @property
+    def locale(self):
+        return self._locale
+    @locale.setter
+    def locale(self, v):
+        self._locale = v
 
-    def set_voice(self, voice):
-        self.voice = voice
+    @property
+    def engine(self):
+        return self._engine
+    @engine.setter
+    def engine(self, v):
+        self._engine = v
 
-    def set_engine(self, engine):
-        self.engine = engine
+    @property
+    def voice(self):
+        return self._voice
+    @voice.setter
+    def voice(self, v):
+        self._voice = v
+
+    @property
+    def pitch(self):
+        return self._pitch
+    @pitch.setter
+    def pitch(self, v):
+        self._pitch = v
+
+    @property
+    def speed(self):
+        return self._speed
+    @speed.setter
+    def speed(self, v):
+        self._speed = v
 
     def synthesize(self, txt, mode='txt'):
 
-        if self.host_tts == 'local':
+        if self._host_tts == 'local':
 
             # import pdb; pdb.set_trace()
 
@@ -90,8 +120,8 @@ class TTS(object):
 
             if self.engine == 'mary':
 
-                mary_set_voice  (self.voice)
-                mary_set_locale (self.locale)
+                mary_set_voice  (self._voice)
+                mary_set_locale (self._locale)
 
                 if mode == 'txt':
                     wav = mary_synth (txt)
@@ -105,7 +135,9 @@ class TTS(object):
 
                 if mode == 'txt':
 
-                    self.espeak.voice = self.voice
+                    self.espeak.voice = self._voice
+                    self.espeak.speed = self._speed
+                    self.espeak.pitch = self._pitch
                     wav = self.espeak.synth_wav (txt)
                     # logging.debug ('synthesize: %s %s -> %s' % (txt, mode, repr(wav)))
 
@@ -122,12 +154,12 @@ class TTS(object):
 
         else:
 
-            args = {'l': self.locale,
-                    'v': self.voice,
-                    'e': self.engine,
+            args = {'l': self._locale,
+                    'v': self._voice,
+                    'e': self._engine,
                     'm': mode,
                     't': txt.encode('utf8')}
-            url = 'http://%s:%s/tts/synth?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+            url = 'http://%s:%s/tts/synth?%s' % (self._host_tts, self._port_tts, urllib.urlencode(args))
 
             response = requests.get(url)
 
@@ -145,7 +177,7 @@ class TTS(object):
 
     def play_wav (self, wav, async=False):
 
-        if self.host_tts == 'local':
+        if self._host_tts == 'local':
 
             if wav:
                 self.player.play(wav, async)
@@ -154,7 +186,7 @@ class TTS(object):
 
         else:
 
-            url = 'http://%s:%s/tts/play' % (self.host_tts, self.port_tts)
+            url = 'http://%s:%s/tts/play' % (self._host_tts, self._port_tts)
                           
             if async:
                 url += '?async=t'
@@ -173,19 +205,19 @@ class TTS(object):
 
     def gen_ipa (self, word):
 
-        if self.host_tts == 'local':
+        if self._host_tts == 'local':
 
             if self.engine == 'mary':
 
-                mary_set_voice  (self.voice)
-                mary_set_locale (self.locale)
+                mary_set_voice  (self._voice)
+                mary_set_locale (self._locale)
 
                 mp = mary_gen_phonemes (word)
                 return mary2ipa(word, mp)
 
             elif self.engine == 'espeak':
 
-                self.espeak.voice = self.voice
+                self.espeak.voice = self._voice
                 e_ipa = self.espeak.g2p (word, ipa='2')
                 xs = ipa2xsampa(word, e_ipa)
                 ipa = xsampa2ipa(word, xs)
@@ -206,11 +238,11 @@ class TTS(object):
 
 
         else:
-            args = {'l': self.locale,
-                    'v': self.voice,
-                    'e': self.engine,
+            args = {'l': self._locale,
+                    'v': self._voice,
+                    'e': self._engine,
                     't': word.encode('utf8')}
-            url = 'http://%s:%s/tts/g2p?%s' % (self.host_tts, self.port_tts, urllib.urlencode(args))
+            url = 'http://%s:%s/tts/g2p?%s' % (self._host_tts, self._port_tts, urllib.urlencode(args))
 
             response = requests.get(url)
 

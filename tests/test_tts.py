@@ -50,12 +50,12 @@ class TestTTS (unittest.TestCase):
 
         # test mary
 
-        tts.set_engine('mary')
+        tts.engine = 'mary'
 
         for l, voice, word, ph in MARY_TESTS:
 
-            tts.set_locale(l)
-            tts.set_voice(voice)
+            tts.locale = l
+            tts.voice  = voice
 
             mary_ph = tts.gen_ipa (word)
 
@@ -74,13 +74,13 @@ class TestTTS (unittest.TestCase):
 
         # test espeak
 
-        tts.set_engine('espeak')
+        tts.engine = 'espeak'
 
         first = True
         for v, word, ph in ESPEAK_TESTS:
 
-            tts.set_locale(v)
-            tts.set_voice(v)
+            tts.locale = v
+            tts.voice  = v
 
             espeak_ph = tts.gen_ipa (word)
 
