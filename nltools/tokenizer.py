@@ -216,6 +216,8 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
 
         s = s.replace (srch, repl)
 
+    s = s.lower()
+
     # deal with numbers
     s = NUMBER_PATTERN_START.sub(spellout_number_en, s)
     s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
@@ -246,8 +248,8 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
     s = APOSTROPHE_LL_PATTERN3.sub(protect_apostrophe_ll, s)
 
     # I'm, I've
-    s = s.replace (u"I'm", u'I✓m')
-    s = s.replace (u"I've", u'I✓ve')
+    s = s.replace (u"i'm", u'i✓m')
+    s = s.replace (u"i've", u'i✓ve')
 
     # deal with punctuation
     if keep_punctuation:
@@ -271,7 +273,7 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
 
     for word in words:
 
-        w = word.rstrip().replace(u'–',u'').lower()
+        w = word.rstrip().replace(u'–',u'')
         if len(w) > 0:
 
             if w in wrt_en:

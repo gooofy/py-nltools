@@ -135,6 +135,8 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"but I can't and I'm good.", lang='en'), [u'but', u'i', u"can't", u"and", u"i'm", u"good"])
         self.assertEqual (tokenize(u"we're good she'd do that.", lang='en'), [u"we're", u"good", u"she'd", u"do", u"that"])
         self.assertEqual (tokenize(u"we'll be good.", lang='en'), [u"we'll", u"be", u"good"])
+        self.assertEqual (tokenize(u"ZUCKERBERG'S", lang='en'), [u"zuckerberg's"])
+        self.assertEqual (tokenize(u"THIS IS ZUCKERBERG'S PROPERTY", lang='en'), [u'this', u'is', u"zuckerberg's", u'property'])
 
     def test_tokenize_numbers_english(self):
         self.assertEqual (tokenize(u"1 2 3 4", lang='en'), ["one", "two", "three", "four"])
