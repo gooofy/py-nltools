@@ -113,6 +113,7 @@ MACRO_PUNCTUATION = [
 wrt_en = { u'0'          : u'zero',
            u'1'          : u'one',
            u'colour'     : u'color',
+           u'okay'       : u'ok',
          }
 
 symb_abbrev_norm_en = [
