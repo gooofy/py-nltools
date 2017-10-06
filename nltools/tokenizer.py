@@ -84,6 +84,9 @@ def isgalnum (s):
 #
 #####################################################################
 
+PERCENT_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*\s*[%]")
+PERCENT_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*\s*[%]")
+
 NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
 NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
 
@@ -142,6 +145,12 @@ def spellout_number_en (m):
     if not '.' in numstr:
         numstr = numstr.replace(',','.')
 
+    if numstr.endswith('%'):
+        numstr = numstr[:len(numstr)-1]
+        percent = True
+    else:
+        percent = False
+
     parts = numstr.split ('.')
 
     # print repr(parts)
@@ -153,6 +162,9 @@ def spellout_number_en (m):
         # spell out fractional part in digits
 
         res += ' point ' + num2words(int(parts[1]))
+
+    if percent:
+        res += ' percent'
 
     return res
 
@@ -219,6 +231,9 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
     s = s.lower()
 
     # deal with numbers
+    s = PERCENT_PATTERN_START.sub(spellout_number_en, s)
+    s = PERCENT_PATTERN_SPACE.sub(spellout_number_en, s)
+
     s = NUMBER_PATTERN_START.sub(spellout_number_en, s)
     s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
 
