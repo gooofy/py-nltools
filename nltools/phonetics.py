@@ -22,7 +22,7 @@
 # big phoneme table
 #
 # entries:
-# ( IPA, XSAMPA, MARY )
+# ( IPA, XSAMPA, MARY, ESPEAK )
 #
 
 MAX_PHONEME_LENGTH = 2
@@ -33,62 +33,62 @@ big_phoneme_table = [
         # stop
         #
 
-        ( u'p' , 'p' , 'p' ),
-        ( u'b' , 'b' , 'b' ),
-        ( u't' , 't' , 't' ),
-        ( u'd' , 'd' , 'd' ),
-        ( u'k' , 'k' , 'k' ),
-        ( u'g' , 'g' , 'g' ),
-        ( u'ʔ' , '?' , '?' ),
+        ( u'p' , 'p' , 'p', 'p' ),
+        ( u'b' , 'b' , 'b', 'b' ),
+        ( u't' , 't' , 't', 't' ),
+        ( u'd' , 'd' , 'd', 'd' ),
+        ( u'k' , 'k' , 'k', 'k' ),
+        ( u'g' , 'g' , 'g', 'g' ),
+        ( u'ʔ' , '?' , '?', '?' ),
 
         #
         # 2 consonants
         #
 
-        ( u'pf' , 'pf' , 'pf' ),
-        ( u'ts' , 'ts' , 'ts' ),
-        ( u'tʃ' , 'tS' , 'tS' ),
-        ( u'dʒ' , 'dZ' , 'dZ' ),
+        ( u'pf' , 'pf' , 'pf' , 'pf' ),
+        ( u'ts' , 'ts' , 'ts' , 'ts' ),
+        ( u'tʃ' , 'tS' , 'tS' , 'tS' ),
+        ( u'dʒ' , 'dZ' , 'dZ' , 'dZ' ),
 
         #
         # fricative
         #
 
-        ( u'f' , 'f' , 'f' ),
-        ( u'v' , 'v' , 'v' ),
-        ( u'θ' , 'T' , 'T' ),
-        ( u'ð' , 'D' , 'D' ),
-        ( u's' , 's' , 's' ),
-        ( u'z' , 'z' , 'z' ),
-        ( u'ʃ' , 'S' , 'S' ),
-        ( u'ʒ' , 'Z' , 'Z' ),
-        ( u'ç' , 'C' , 'C' ),
-        ( u'j' , 'j' , 'j' ),
-        ( u'x' , 'x' , 'x' ),
-        ( u'ʁ' , 'R' , 'R' ),
-        ( u'h' , 'h' , 'h' ),
-        ( u'ɥ' , 'H' , 'H' ),
+        ( u'f' , 'f' , 'f' , 'f' ),
+        ( u'v' , 'v' , 'v' , 'v' ),
+        ( u'θ' , 'T' , 'T' , 'T' ),
+        ( u'ð' , 'D' , 'D' , 'D' ),
+        ( u's' , 's' , 's' , 's' ),
+        ( u'z' , 'z' , 'z' , 'z' ),
+        ( u'ʃ' , 'S' , 'S' , 'S' ),
+        ( u'ʒ' , 'Z' , 'Z' , 'Z' ),
+        ( u'ç' , 'C' , 'C' , 'C' ),
+        ( u'j' , 'j' , 'j' , 'j' ),
+        ( u'x' , 'x' , 'x' , 'x' ),
+        ( u'ʁ' , 'R' , 'R' , 'R' ),
+        ( u'h' , 'h' , 'h' , 'h' ),
+        ( u'ɥ' , 'H' , 'H' , 'H' ),
 
         #
         # nasal
         #
 
-        ( u'm' , 'm' , 'm' ),
-        ( u'n' , 'n' , 'n' ),
-        ( u'ɳ' , 'N' , 'N' ),
+        ( u'm' , 'm' , 'm' , 'm' ),
+        ( u'n' , 'n' , 'n' , 'n' ),
+        ( u'ɳ' , 'N' , 'N' , 'N' ),
 
         #
         # liquid
         #
 
-        ( u'l' , 'l' , 'l' ),
-        ( u'r' , 'r' , 'r' ),
+        ( u'l' , 'l' , 'l' , 'l' ),
+        ( u'r' , 'r' , 'r' , 'r' ),
 
         #
         # glide
         #
 
-        ( u'w' , 'w' , 'w' ),
+        ( u'w' , 'w' , 'w', 'w' ),
         # see above ( u'j' , 'j' , 'j' ),
 
         #
@@ -96,50 +96,50 @@ big_phoneme_table = [
         #
 
         # front
-        ( u'i' , 'i' , 'i' ),
-        ( u'ɪ' , 'I' , 'I' ),
-        ( u'y' , 'y' , 'y' ),
-        ( u'ʏ' , 'Y' , 'Y' ),
-        ( u'e' , 'e' , 'e' ),
-        ( u'ø' , '2' , '2' ),
-        ( u'œ' , '9' , '9' ),
-        ( u'ɛ' , 'E' , 'E' ),
-        ( u'æ' , '{' , '{' ),
-        ( u'a' , 'a' , 'a' ),
+        ( u'i' , 'i' , 'i' , 'i' ),
+        ( u'ɪ' , 'I' , 'I' , 'I' ),
+        ( u'y' , 'y' , 'y' , 'y' ),
+        ( u'ʏ' , 'Y' , 'Y' , 'y' ),
+        ( u'e' , 'e' , 'e' , 'e' ),
+        ( u'ø' , '2' , '2' , 'W' ),
+        ( u'œ' , '9' , '9' , 'W' ),
+        ( u'ɛ' , 'E' , 'E' , 'E' ),
+        ( u'æ' , '{' , '{' , 'a' ),
+        ( u'a' , 'a' , 'a' , 'a' ),
 
         # central
-        ( u'ʌ' , 'V' , 'V' ),
-        ( u'ə' , '@' , '@' ),
-        ( u'ɐ' , '6' , '6' ),
-        ( u'ɜ' , '3' , 'r=' ),
+        ( u'ʌ' , 'V' , 'V' , 'A'  ),
+        ( u'ə' , '@' , '@' , '@'  ),
+        ( u'ɐ' , '6' , '6' , '@' ),
+        ( u'ɜ' , '3' , 'r=', '3'  ), 
 
         # back
-        ( u'u' , 'u' , 'u' ),
-        ( u'ʊ' , 'U' , 'U' ),
-        ( u'o' , 'o' , 'o' ),
-        ( u'ɔ' , 'O' , 'O' ),
-        ( u'ɑ' , 'A' , 'A' ),
-        ( u'ɒ' , 'Q' , 'Q' ),
+        ( u'u' , 'u' , 'u' , 'u' ),
+        ( u'ʊ' , 'U' , 'U' , 'U' ),
+        ( u'o' , 'o' , 'o' , 'o' ),
+        ( u'ɔ' , 'O' , 'O' , 'O' ),
+        ( u'ɑ' , 'A' , 'A' , 'A' ),
+        ( u'ɒ' , 'Q' , 'Q' , 'Q' ),
 
         # diphtongs
 
-        ( u'aɪ' , 'aI' , 'aI' ),
-        ( u'ɔɪ' , 'OI' , 'OI' ),
-        ( u'aʊ' , 'aU' , 'aU' ),
-        ( u'ɔʏ' , 'OY' , 'OY' ),
+        ( u'aɪ' , 'aI' , 'aI' , 'aI' ),
+        ( u'ɔɪ' , 'OI' , 'OI' , 'OI' ),
+        ( u'aʊ' , 'aU' , 'aU' , 'aU' ),
+        ( u'ɔʏ' , 'OY' , 'OY' , 'OY' ),
 
         #
         # misc
         #
-        ( u'ː' , ':' , ':' ),
-        ( u'-' , '-' , '-' ),
-        ( u'\'' , '\'' , '\'' ),
+        ( u'ː'  , ':'  , ':'  , ':'  ),
+        ( u'-'  , '-'  , '-'  , '-'  ),
+        ( u'\'' , '\'' , '\'' , '\'' ),
 
         #
         # noise
         #
 
-        ( u'#' , 'nC' , 'nC' ),
+        ( u'#' , 'nC' , 'nC', 'nC' ),
     ]
 
 IPA_normalization = {
@@ -297,6 +297,42 @@ def xsampa2ipa (graph, xs):
 def mary2ipa (graph, ms):
     ms = _normalize (ms,  XSAMPA_normalization)
     return _translate (graph, ms, 2, 0)
+
+ESPEAK_normalization = {
+    ' '  : '',
+    ';'  : '',
+    '~'  : '',
+    '0'  : 'O',
+    ','  : '',
+    # '3'  : '@',
+    't#' : 't',
+    'E2' : 'E',
+    'I#' : 'I',
+    'L'  : 'l',
+    '_!' : '',
+    '_::': '', 
+    '_;_': '', 
+    '_!' : '',
+    '_|' : '',
+    '_:' : '',
+    '_'  : '',
+    '!'  : '',
+    '('  : '',
+    ')'  : '',
+    'Y'  : 'y',
+    'pF' : 'pf',
+    }
+
+def espeak2ipa (graph, ms):
+    for c in ESPEAK_normalization:
+        ms = ms.replace(c, ESPEAK_normalization[c])
+    return _translate (graph, ms, 3, 0)
+
+def ipa2espeak (graph, ipas, spaces=False, stress_to_vowels=True):
+    ipas = _normalize (ipas,  IPA_normalization)
+    if stress_to_vowels:
+        ipas = ipa_move_stress_to_vowels(ipas)
+    return _translate (graph, ipas, 0, 3, spaces)
 
 #
 # X-ARPABET is my own creation - similar to arpabet plus
