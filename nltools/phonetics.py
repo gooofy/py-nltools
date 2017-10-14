@@ -139,7 +139,7 @@ big_phoneme_table = [
         # noise
         #
 
-        ( u'#' , 'nC' , 'nC', 'nC' ),
+        ( u'#' , '#' , '#' ),
     ]
 
 IPA_normalization = {
@@ -454,6 +454,10 @@ xs2xa_table = [
     ('OI'  , 'OI'),
     ('aU'  , 'AW'),
     ('OY'  , 'OY'),
+
+    # misc (noise)
+    ('#'   , 'NSPC'),
+
     ]
 
 XARPABET_normalization = {
