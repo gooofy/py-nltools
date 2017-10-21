@@ -11,8 +11,10 @@ Non-exhaustive liste of modules contained:
 * maryclient: g2p and speech synthesis using Mary TTS
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
+* pulserecorder: audio recording through pulseaudio
 * tokenizer: english and german word tokenizer aimed at spoken language applications
 * threadpool: simple thread pool implementation
+* vad: Voice Activity Detection finite state machine based on webrtc VAD
 
 I plan to add modules as I need them in my AI projects.
 
@@ -27,6 +29,7 @@ Requirements
 * espeak-ng, py-espeak-ng
 * sequitur
 * pulseaudio
+* webrtc
 
 License
 =======
