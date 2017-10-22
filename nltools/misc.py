@@ -240,3 +240,30 @@ def edit_popup (stdscr, title, s):
 
     return s.rstrip()
 
+def message_popup (stdscr, title, msg):
+
+    my, mx = stdscr.getmaxyx()
+
+    ww = len(title)
+    if len(msg)>ww:
+        ww = len(msg)
+    ww += 6
+    wh = 3
+
+    wox = mx / 2 - ww/2
+    woy = my / 2 - wh/2
+
+    win = curses.newwin(wh, ww, woy, wox)
+    win.box()
+    win.addstr(0, 3, title.encode('utf8'))
+
+    win.refresh()
+
+    swin = win.derwin (1, ww-4, 1, 2)
+
+    swin.insstr (0, 0, msg.encode('utf8'))
+
+    swin.refresh()
+
+    return swin
+
