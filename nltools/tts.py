@@ -31,10 +31,9 @@ import urllib
 
 from base64                 import b64encode
 from nltools.pulseplayer    import PulsePlayer
-from nltools.maryclient     import mary_init, mary_set_voice, mary_set_locale, mary_synth,\
-                                   mary_synth_phonemes, mary_gen_phonemes
 from nltools.phonetics      import ipa2mary, mary2ipa, ipa2xsampa, xsampa2ipa
 from espeakng               import ESpeakNG
+from marytts                import MaryTTS
 
 MARY_VOICES = {
 
@@ -71,9 +70,9 @@ class TTS(object):
         self._speed    = speed
 
         if host_tts == 'local':
-            self.player = PulsePlayer('Local TTS Client')
-            mary_init()
-            self.espeak = ESpeakNG()
+            self.player  = PulsePlayer('Local TTS Client')
+            self.espeak  = ESpeakNG()
+            self.marytts = MaryTTS()
 
     @property
     def locale(self):
@@ -120,14 +119,14 @@ class TTS(object):
 
             if self.engine == 'mary':
 
-                mary_set_voice  (self._voice)
-                mary_set_locale (self._locale)
+                self.marytts.voice  = self._voice
+                self.marytts.locale = self._locale
 
                 if mode == 'txt':
-                    wav = mary_synth (txt)
+                    wav = self.marytts.synth_wav (txt)
                 elif mode == 'ipa':
                     xs = ipa2mary ('ipa', txt)
-                    wav = mary_synth_phonemes (xs)
+                    wav = self.marytts.synth_wav (xs, fmt='xs')
                 else:
                     raise Exception ("unknown mary mode '%s'" % mode)
 
@@ -209,10 +208,10 @@ class TTS(object):
 
             if self.engine == 'mary':
 
-                mary_set_voice  (self._voice)
-                mary_set_locale (self._locale)
+                self.marytts.voice  = self._voice
+                self.marytts.locale = self._locale
 
-                mp = mary_gen_phonemes (word)
+                mp = self.marytts.g2p (word)
                 return mary2ipa(word, mp)
 
             elif self.engine == 'espeak':
