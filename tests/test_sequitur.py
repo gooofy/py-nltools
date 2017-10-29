@@ -23,7 +23,7 @@ import logging
 
 from nltools.sequiturclient import sequitur_gen_ipa
 
-MODELFN = 'models/sequitur-voxforge-de-r20161117'
+MODELFN = 'models/sequitur-voxforge-de-latest'
 
 G2P_TESTS = [
                 (u'gelbseidenen',     u"'g\u025blb-za\u026a-d\u0259-n\u0259n", ),
