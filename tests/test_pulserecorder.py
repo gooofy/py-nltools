@@ -24,7 +24,7 @@ import time
 
 from nltools.pulserecorder import PulseRecorder
 
-SOURCE              = 'CM108'
+SOURCE              = 'Monitor'
 SAMPLERATE          = 16000
 VOLUME              = 120
 
@@ -47,7 +47,7 @@ class TestPulseRecorder (unittest.TestCase):
 
 if __name__ == "__main__":
 
-    logging.basicConfig(level=logging.INFO)
+    logging.basicConfig(level=logging.DEBUG)
     
     unittest.main()
 
