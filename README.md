@@ -7,8 +7,7 @@ to replace those.
 Non-exhaustive liste of modules contained:
 
 * phonetics: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
-* tts\_client: abstraction layer towards using eSpeak NG, MaryTTS or a remote TTS server and sequitur g2p
-* maryclient: g2p and speech synthesis using Mary TTS
+* tts\_client: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
 * pulserecorder: audio recording through pulseaudio
@@ -25,8 +24,10 @@ Requirements
 *Note*: probably incomplete.
 
 * Python 2.7 
-* Mary TTS
-* espeak-ng, py-espeak-ng
+* for TTS one or more of:
+ * MaryTTS, py-marytts
+ * espeak-ng, py-espeak-ng
+ * SVOX Pico TTS, py-picotts
 * sequitur
 * pulseaudio
 * webrtc
