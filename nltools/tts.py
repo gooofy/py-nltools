@@ -19,7 +19,7 @@
 #
 
 #
-# Abstraction layer for multiple TTS engines (Mary TTS and eSpeak NG at the moment)
+# Abstraction layer for multiple TTS engines (Mary TTS, SVOX Pico TTS and eSpeak NG at the moment)
 # can run those locally or act as a client for our HTTP TTS server
 #
 
