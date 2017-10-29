@@ -40,9 +40,15 @@ ESPEAK_TESTS = [
                 ('de', u'GELBSEIDENEN',     u"g'\u025blbza\u026ad\u0259n\u0259n"),
                 ('de', u'UNMUTE',           u"'\u028anmu\u02d0t\u0259"),
                ]
+
+PICO_TESTS = [
+              ('en-US', u'musicians'),
+              ('de-DE', u'Andromeda'),
+             ]
+
 class TestTTS (unittest.TestCase):
 
-    def test_tts(self):
+    def test_tts_mary(self):
 
         config = misc.load_config('.speechrc')
         
@@ -72,7 +78,11 @@ class TestTTS (unittest.TestCase):
             # tts.say (word)
             # tts.play_wav(wav)
 
-        # test espeak
+    def test_tts_espeak(self):
+
+        config = misc.load_config('.speechrc')
+        
+        tts = TTS(config.get('tts', 'host'), int(config.get('tts', 'port')))
 
         tts.engine = 'espeak'
 
@@ -98,6 +108,25 @@ class TestTTS (unittest.TestCase):
                 tts.say (word)
                 first = False
             # tts.play_wav(wav)
+
+    def test_tts_pico(self):
+
+        config = misc.load_config('.speechrc')
+        
+        tts = TTS(config.get('tts', 'host'), int(config.get('tts', 'port')))
+
+        tts.engine = 'pico'
+
+        for v, word in PICO_TESTS:
+
+            tts.locale = v
+            tts.voice  = v
+
+            wav = tts.synthesize (word)
+            logging.debug('wav len: %d bytes.' % len(wav))
+            self.assertGreater (len(wav), 100)
+
+            tts.say (word)
 
 if __name__ == "__main__":
 

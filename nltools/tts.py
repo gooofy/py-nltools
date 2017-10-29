@@ -34,6 +34,7 @@ from nltools.pulseplayer    import PulsePlayer
 from nltools.phonetics      import ipa2mary, mary2ipa, ipa2xsampa, xsampa2ipa
 from espeakng               import ESpeakNG
 from marytts                import MaryTTS
+from picotts                import PicoTTS
 
 MARY_VOICES = {
 
@@ -73,6 +74,7 @@ class TTS(object):
             self.player  = PulsePlayer('Local TTS Client')
             self.espeak  = ESpeakNG()
             self.marytts = MaryTTS()
+            self.picotts = PicoTTS()
 
     @property
     def locale(self):
@@ -144,6 +146,14 @@ class TTS(object):
                     xs = ipa2xsampa ('ipa', txt)
                     logging.debug ('synthesize: %s %s -> %s' % (txt, mode, repr(xs)))
                     wav = self.espeak.synth_wav (xs, fmt='xs')
+
+            elif self.engine == 'pico':
+
+                if mode == 'txt':
+
+                    self.picotts.voice = self._voice
+                    wav = self.picotts.synth_wav (txt)
+                    # logging.debug ('synthesize: %s %s -> %s' % (txt, mode, repr(wav)))
 
                 else:
                     raise Exception ("unknown espeak mode '%s'" % mode)
