@@ -7,7 +7,8 @@ to replace those.
 Non-exhaustive liste of modules contained:
 
 * phonetics: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
-* tts\_client: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
+* tts: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
+* asr: abstraction layer towards using kaldi-asr and pocketsphinx
 * sequiturclient: g2p using sequitur
 * pulseplayer: audio playback through pulseaudio
 * pulserecorder: audio recording through pulseaudio
@@ -16,7 +17,6 @@ Non-exhaustive liste of modules contained:
 * vad: Voice Activity Detection finite state machine based on webrtc VAD
 
 I plan to add modules as I need them in my AI projects.
-
 
 Requirements
 ============
@@ -28,6 +28,9 @@ Requirements
   * MaryTTS, py-marytts
   * espeak-ng, py-espeak-ng
   * SVOX Pico TTS, py-picotts
+* for ASR one or more of:
+  * kaldi-asr 5.1, py-kaldi-simple
+  * pocketsphinx
 * sequitur
 * pulseaudio
 * webrtc
