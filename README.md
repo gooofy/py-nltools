@@ -25,9 +25,9 @@ Requirements
 
 * Python 2.7 
 * for TTS one or more of:
- * MaryTTS, py-marytts
- * espeak-ng, py-espeak-ng
- * SVOX Pico TTS, py-picotts
+  * MaryTTS, py-marytts
+  * espeak-ng, py-espeak-ng
+  * SVOX Pico TTS, py-picotts
 * sequitur
 * pulseaudio
 * webrtc
