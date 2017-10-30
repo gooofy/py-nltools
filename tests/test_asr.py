@@ -26,8 +26,12 @@ import struct
 from nltools.asr import ASR, ASR_ENGINE_NNET3, ASR_ENGINE_POCKETSPHINX
 from nltools     import misc
 
-TEST_WAVE_EN    = 'tests/foo.wav'
-TEST_WAVE_EN_TS = 'ah indeed'
+TEST_WAVE_EN       = 'tests/foo.wav'
+TEST_WAVE_EN_TS    = 'ah indeed'
+TEST_WAVE_EN_TS_PS = 'aha indeed'
+
+POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-voxforge-en-latest'
+POCKETSPHINX_MODELNAME = 'voxforge'
 
 class TestASR (unittest.TestCase):
 
@@ -68,6 +72,44 @@ class TestASR (unittest.TestCase):
         wavf.close()
 
         self.assertEqual(s.strip(), TEST_WAVE_EN_TS)
+
+    def test_asr_pocketsphinx(self):
+
+        asr = ASR(engine = ASR_ENGINE_POCKETSPHINX, model_dir = POCKETSPHINX_MODELDIR, model_name = POCKETSPHINX_MODELNAME)
+
+        wavf = wave.open(TEST_WAVE_EN, 'rb')
+
+        # check format
+        self.assertEqual(wavf.getnchannels(), 1)
+        self.assertEqual(wavf.getsampwidth(), 2)
+
+        # process file in 250ms chunks
+
+        chunk_frames = 250 * wavf.getframerate() / 1000
+        tot_frames   = wavf.getnframes()
+
+        num_frames = 0
+        while num_frames < tot_frames:
+
+            finalize = False
+            if (num_frames + chunk_frames) < tot_frames:
+                nframes = chunk_frames
+            else:
+                nframes = tot_frames - num_frames
+                finalize = True
+
+            frames = wavf.readframes(nframes)
+            num_frames += nframes
+            samples = struct.unpack_from('<%dh' % nframes, frames)
+
+            s, l = asr.decode(wavf.getframerate(), samples, finalize)
+
+            if not finalize:
+                self.assertEqual(s, None)
+
+        wavf.close()
+
+        self.assertEqual(s.strip(), TEST_WAVE_EN_TS_PS)
 
 
 if __name__ == "__main__":

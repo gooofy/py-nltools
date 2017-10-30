@@ -26,7 +26,10 @@
 import traceback
 import logging
 import time
+import re
+import struct
 import numpy as np
+import pocketsphinx
 
 from base64                 import b64encode
 from kaldisimple.nnet3      import KaldiNNet3OnlineModel, KaldiNNet3OnlineDecoder
@@ -58,6 +61,49 @@ class ASR(object):
             self.nnet3_model = KaldiNNet3OnlineModel ( self._model_dir, self._model_name )
             logging.debug ('ASR model loaded. took %fs' % (time.time() - start_time))
 
+        elif self._engine == ASR_ENGINE_POCKETSPHINX:
+
+            self.ps_config = pocketsphinx.Decoder.default_config()
+
+            # determine CFG_N_TIED_STATES, CFG_WAVFILE_SRATE
+            # cmusphinx-cont-voxforge-en-latest/etc/sphinx_train.cfg
+            traincfg_fn        = '%s/etc/sphinx_train.cfg' % model_dir
+            n_tied_states      = 6000
+            self.ps_samplerate = 16000
+            with open (traincfg_fn, 'r') as traincfg_f:
+                for line in traincfg_f:
+                    if not line:
+                        break
+                    # $CFG_N_TIED_STATES = 6000;
+                    if 'CFG_N_TIED_STATES' in line:
+                        # logging.debug ('parsing train cfg line %s' % line)
+                        m = re.match (r"\$CFG_N_TIED_STATES\s+=\s+([0-9]+)\s*;", line.strip())
+                        if m:
+                            n_tied_states = int(m.group(1))
+                            # logging.debug ('matched, n_tied_states=%d' % n_tied_states)
+
+                    # $CFG_WAVFILE_SRATE = 16000.0;
+                    if 'CFG_WAVFILE_SRATE' in line:
+                        m = re.match (r"\$CFG_WAVFILE_SRATE\s+=\s+([0-9.]+)\s*;", line.strip())
+                        if m:
+                            self.ps_samplerate = int(float(m.group(1)))
+                            
+            self.ps_config.set_string('-hmm', '%s/model_parameters/%s.cd_cont_%d' % (model_dir, model_name, n_tied_states))
+            self.ps_config.set_float ('-lw', 10)
+            self.ps_config.set_string('-feat', '1s_c_d_dd')
+            self.ps_config.set_float ('-beam', 1e-80)
+            self.ps_config.set_float ('-wbeam', 1e-40)
+            self.ps_config.set_string('-dict', '%s/etc/%s.dic' % (model_dir, model_name))
+            self.ps_config.set_float ('-wip', 0.2)
+            self.ps_config.set_string('-agc', 'none')
+            self.ps_config.set_string('-varnorm', 'no')
+            self.ps_config.set_string('-cmn', 'current')
+            self.ps_config.set_string('-lm', '%s/etc/%s.lm.bin' % (model_dir, model_name))
+
+            self.ps_config.set_string('-logfn', "/dev/null")
+
+            self.asr_in_utt = {} # stream_id -> Boolean
+
         else:
             raise Exception ('unknown ASR engine: %s' % self._engine)
 
@@ -75,6 +121,35 @@ class ASR(object):
                 return None, 0.0
 
             hstr, confidence = decoder.get_decoded_string()
+
+        elif self._engine == ASR_ENGINE_POCKETSPHINX:
+
+            if sample_rate != self.ps_samplerate:
+                raise Exception ('decode: samplerate does not match model: %d vs %d' % (sample_rate, self.ps_samplerate))
+
+            if not stream_id in self.asr_decoders:
+                self.asr_decoders[stream_id] = pocketsphinx.Decoder(self.ps_config)
+                self.asr_in_utt[stream_id] = False
+
+            decoder = self.asr_decoders[stream_id]
+            if not self.asr_in_utt[stream_id]:
+                decoder.start_utt()
+                self.asr_in_utt[stream_id] = True
+
+            audios = struct.pack('<%dh' % len(audio), *audio)
+
+            decoder.process_raw(audios, False, False)
+
+            if not do_finalize:
+                return None, 0.0
+
+            decoder.end_utt()
+            self.asr_in_utt[stream_id] = False
+
+            hypothesis = decoder.hyp()
+            logmath = decoder.get_logmath()
+            hstr = hypothesis.hypstr.decode('utf8').strip()
+            confidence = logmath.exp(hypothesis.prob)
 
         else:
             raise Exception ('unknown ASR engine: %s' % self._engine)
