@@ -31,7 +31,7 @@ RING_BUF_ENTRIES      =  5 * 60 * 1000 / BUFFER_DURATION # 5 minutes max
 
 MIN_BUF_ENTRIES       =            400 / BUFFER_DURATION # min  0.4  sec utterance
 MAX_BUF_ENTRIES       =      12 * 1000 / BUFFER_DURATION # max 12.0  sec utterance
-MAX_GAP               =            400 / BUFFER_DURATION # max  0.4  sec gaps in utterance
+MAX_GAP               =            700 / BUFFER_DURATION # max  0.7  sec gaps in utterance
 
 STATE_IDLE            =  0
 
@@ -115,6 +115,7 @@ class VAD(object):
 
             else:
                 if not vad_res:
+                    logging.debug ("*** START OF GAP at frame %3d ***" % len(self.buf))
                     self.state     = STATE_GAP
                     self.gap_start = len(self.buf)
                 return self._return_audio(False)
@@ -122,14 +123,15 @@ class VAD(object):
         elif self.state == STATE_GAP:
             self.buf.append(cur_frame)
 
+            gap_len = len(self.buf) - self.gap_start
             if vad_res:
                 self.state = STATE_SPEECH
+                logging.debug ("*** END OF GAP (%d < %d) at frame %3d ***" % (gap_len, MAX_GAP, len(self.buf)))
                 return self._return_audio(False)
 
             else:
-                gap_len = len(self.buf) - self.gap_start
                 if gap_len > MAX_GAP:
-                    logging.debug ("*** GAP (%d) TOO LONG at frame %3d ***" % (gap_len, len(self.buf)))
+                    logging.debug ("*** GAP (%d > %d) TOO LONG at frame %3d ***" % (gap_len, MAX_GAP, len(self.buf)))
                     self.state = STATE_IDLE
                     return self._return_audio(True)
                 else:
