@@ -31,8 +31,8 @@ import struct
 import numpy as np
 import pocketsphinx
 
-from base64                 import b64encode
-from kaldisimple.nnet3      import KaldiNNet3OnlineModel, KaldiNNet3OnlineDecoder
+from base64             import b64encode
+from kaldiasr.nnet3     import KaldiNNet3OnlineModel, KaldiNNet3OnlineDecoder
 
 ASR_ENGINE_NNET3        = 'kaldi-nnet3'
 ASR_ENGINE_POCKETSPHINX = 'pocketsphinx'

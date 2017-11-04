@@ -58,7 +58,7 @@ Requirements
   - espeak-ng, py-espeak-ng
   - SVOX Pico TTS, py-picotts
 * for ASR one or more of:
-  - kaldi-asr 5.1, py-kaldi-simple
+  - kaldi-asr 5.1, py-kaldi-asr
   - pocketsphinx
 * sequitur
 * pulseaudio
