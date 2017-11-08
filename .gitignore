@@ -18,4 +18,5 @@ __pycache__/
 
 models
 foo.wav
-
+.asciidoctor
+README.html
