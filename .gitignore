@@ -20,3 +20,8 @@ models
 foo.wav
 .asciidoctor
 README.html
+README.md
+README.xml
+build
+dist
+py_nltools.egg-info
