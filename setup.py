@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name                 = 'py-nltools',
-    version              = '0.1.0',
+    version              = '0.1.1',
     description          = 'A collection of basic python modules for spoken natural language processing',
     long_description     = open('README.md').read(),
     author               = 'Guenter Bartsch',
@@ -12,7 +12,7 @@ setup(
     url                  = 'https://github.com/gooofy/py-nltools',
     packages             = ['nltools'],
     install_requires     = [
-                            'num2words', 'marytts', 'picotts', 'espeakng', 'pocketsphinx', 'kaldiasr', 'numpy', 'webrtcvad',
+                            'num2words', 'py-marytts', 'py-picotts', 'py-espeak-ng', 'pocketsphinx', 'py-kaldi-asr', 'numpy', 'webrtcvad',
                            ],
     classifiers          = [
                                'Operating System :: POSIX :: Linux',
