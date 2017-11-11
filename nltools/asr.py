@@ -42,12 +42,21 @@ DEFAULT_MODEL_DIR       = 'models/kaldi-nnet3-voxforge-en-latest'
 DEFAULT_MODEL_NAME      = 'nnet_tdnn_a'
 DEFAULT_STREAM_ID       = '__default__'
 
+DEFAULT_KALDI_BEAM                      = 15.0
+DEFAULT_KALDI_ACOUSTIC_SCALE            = 0.1
+DEFAULT_KALDI_FRAME_SUBSAMPLING_FACTOR  = 1
+
 class ASR(object):
 
     def __init__(self, 
                  engine      = DEFAULT_ENGINE,
                  model_dir   = DEFAULT_MODEL_DIR,
-                 model_name  = DEFAULT_MODEL_NAME):
+                 model_name  = DEFAULT_MODEL_NAME,
+
+                 kaldi_beam                     = DEFAULT_KALDI_BEAM,
+                 kaldi_acoustic_scale           = DEFAULT_KALDI_ACOUSTIC_SCALE, 
+                 kaldi_frame_subsampling_factor = DEFAULT_KALDI_FRAME_SUBSAMPLING_FACTOR, 
+                ):
 
         self._engine      = engine
         self._model_dir   = model_dir
@@ -58,7 +67,10 @@ class ASR(object):
 
             logging.debug ('loading ASR model %s from %s...' % (self._model_name, self._model_dir))
             start_time = time.time()
-            self.nnet3_model = KaldiNNet3OnlineModel ( self._model_dir, self._model_name )
+            self.nnet3_model = KaldiNNet3OnlineModel ( self._model_dir, self._model_name, 
+                                                       beam                     = kaldi_beam, 
+                                                       acoustic_scale           = kaldi_acoustic_scale, 
+                                                       frame_subsampling_factor = kaldi_frame_subsampling_factor)
             logging.debug ('ASR model loaded. took %fs' % (time.time() - start_time))
 
         elif self._engine == ASR_ENGINE_POCKETSPHINX:
