@@ -133,6 +133,7 @@ class ASR(object):
                 return None, 0.0
 
             hstr, confidence = decoder.get_decoded_string()
+            hstr = hstr.decode('utf8').strip()
 
         elif self._engine == ASR_ENGINE_POCKETSPHINX:
 
