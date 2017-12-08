@@ -566,6 +566,8 @@ wrt = { u'0'             : u'null',
         u'schliesse'        : u'schließe',
         u'schliessen'       : u'schließen',
 
+        u'swr3'             : u'swr drei',
+
         u'§'                : u'paragraph'}
 
 
