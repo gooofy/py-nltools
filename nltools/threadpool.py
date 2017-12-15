@@ -20,6 +20,7 @@
 #
 # A simple thread pool implementation
 #
+from __future__ import print_function
 
 import traceback
 import logging
@@ -46,7 +47,7 @@ class Worker(Thread):
                 func, args, kargs = self.tasks.get(True, 0.1)
                 try:
                     func(*args, **kargs)
-                except Exception, e:
+                except:
                     logging.error('ThreadPool Worker caught exception: %s' % traceback.format_exc())
                     traceback.print_exc()
                 finally:
@@ -72,17 +73,17 @@ class ThreadPool:
 
     def print_synced(self, s):
         self.terminal_lock.acquire()
-        print s
+        print(s)
         self.terminal_lock.release()
 
     def shutdown(self):
-        print "shutdown: tasks.join..."
+        print("shutdown: tasks.join...")
         self.tasks.join()
-        print "shutdown: tasks.join...done. finishing workers..."
+        print("shutdown: tasks.join...done. finishing workers...")
         # for worker in self.workers:
         #     worker.finish = True
         #     worker.join()
 
-        print "shutdown complete."
+        print("shutdown complete.")
 
 
