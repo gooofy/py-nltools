@@ -129,9 +129,6 @@ class ASR(object):
             decoder = self.asr_decoders[stream_id]
             decoder.decode(sample_rate, np.array(audio, dtype=np.float32), do_finalize)
 
-            if not do_finalize:
-                return None, 0.0
-
             hstr, confidence = decoder.get_decoded_string()
             hstr = hstr.decode('utf8').strip()
 
