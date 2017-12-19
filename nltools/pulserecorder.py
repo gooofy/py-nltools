@@ -336,7 +336,7 @@ class PulseRecorder(object):
             logging.error("Connection failed")
 
         elif state == PA_CONTEXT_TERMINATED:
-            logging.info("Connection terminated")
+            logging.debug("Connection terminated")
 
     def source_info_cb(self, context, source_info_p, _, __):
         if not source_info_p:
@@ -363,7 +363,7 @@ class PulseRecorder(object):
             operation = pa_context_set_source_volume_by_index (self._context, source_info.index, cvol, self._null_cb, None)
             pa_operation_unref(operation)
 
-            logging.info('recording from %s' % source_info.name)
+            logging.debug('recording from %s' % source_info.name)
 
             samplespec = pa_sample_spec()
             samplespec.channels = 1
