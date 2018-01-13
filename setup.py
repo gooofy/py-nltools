@@ -12,7 +12,7 @@ setup(
     url                  = 'https://github.com/gooofy/py-nltools',
     packages             = ['nltools'],
     install_requires     = [
-                            'num2words', 'py-marytts', 'py-picotts', 'py-espeak-ng', 'pocketsphinx', 'py-kaldi-asr', 'numpy', 'webrtcvad',
+                            'num2words', 'py-marytts', 'py-picotts', 'py-espeak-ng', 'pocketsphinx', 'py-kaldi-asr', 'numpy', 'webrtcvad', 'setproctitle'
                            ],
     classifiers          = [
                                'Operating System :: POSIX :: Linux',
