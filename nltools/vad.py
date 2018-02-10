@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2013, 2014, 2016, 2017 Guenter Bartsch
+# Copyright 2013, 2014, 2016, 2017, 2018 Guenter Bartsch
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -29,9 +29,9 @@ SAMPLE_RATE           = 16000
 BUFFER_DURATION       = 30 # ms
 RING_BUF_ENTRIES      =  5 * 60 * 1000 / BUFFER_DURATION # 5 minutes max
 
-MIN_BUF_ENTRIES       =            400 / BUFFER_DURATION # min  0.4  sec utterance
-MAX_BUF_ENTRIES       =      12 * 1000 / BUFFER_DURATION # max 12.0  sec utterance
-MAX_GAP               =            700 / BUFFER_DURATION # max  0.7  sec gaps in utterance
+MIN_UTT_LENGTH        = 0.4 # seconds
+MAX_UTT_LENGTH        = 12  # seconds
+MAX_UTT_GAP           = 0.7 # seconds
 
 STATE_IDLE            =  0
 
@@ -46,16 +46,24 @@ STATE_IGNORE_GAP      =  6
 
 class VAD(object):
 
-    def __init__(self, aggressiveness=2, sample_rate=SAMPLE_RATE):
+    def __init__(self, aggressiveness=2, sample_rate=SAMPLE_RATE,
+                 min_utt_length = MIN_UTT_LENGTH,
+                 max_utt_length = MAX_UTT_LENGTH,
+                 max_utt_gap    = MAX_UTT_GAP):
+
 
         self.sample_rate = sample_rate
 
         self.vad = webrtcvad.Vad()
         self.vad.set_mode(aggressiveness)
 
-        self.state       = STATE_IDLE
-        self.buf         = []
-        self.buf_sent    = 0
+        self.state          = STATE_IDLE
+        self.buf            = []
+        self.buf_sent       = 0
+
+        self.min_buf_entries = int(min_utt_length * 1000) / BUFFER_DURATION 
+        self.max_buf_entries = int(max_utt_length * 1000) / BUFFER_DURATION
+        self.max_gap         = int(max_utt_gap    * 1000) / BUFFER_DURATION
 
     def _return_audio (self, finalize):
 
@@ -84,7 +92,7 @@ class VAD(object):
         elif self.state == STATE_PRE_SPEECH:
             self.buf.append(cur_frame)
             if vad_res: 
-                if len (self.buf) > MIN_BUF_ENTRIES:
+                if len (self.buf) > self.min_buf_entries:
                     logging.debug ("*** SPEECH DETECTED at frame %3d ***" % len(self.buf))
                     self.state = STATE_SPEECH
 
@@ -100,7 +108,7 @@ class VAD(object):
 
             else:
                 gap_len = len(self.buf) - self.gap_start
-                if gap_len > MAX_GAP:
+                if gap_len > self.max_gap:
                     logging.debug ("*** PRE GAP (%d) TOO LONG at frame %3d ***" % (gap_len, len(self.buf)))
                     self.state = STATE_IDLE
 
@@ -108,7 +116,7 @@ class VAD(object):
             self.buf.append(cur_frame)
 
             # check if attention span is over
-            if len (self.buf) > MAX_BUF_ENTRIES:
+            if len (self.buf) > self.max_buf_entries:
                 logging.debug ("*** START OF IGNORE at frame %3d ***" % len(self.buf))
                 self.state = STATE_IGNORE
                 return self._return_audio(True)
@@ -126,12 +134,12 @@ class VAD(object):
             gap_len = len(self.buf) - self.gap_start
             if vad_res:
                 self.state = STATE_SPEECH
-                logging.debug ("*** END OF GAP (%d < %d) at frame %3d ***" % (gap_len, MAX_GAP, len(self.buf)))
+                logging.debug ("*** END OF GAP (%d < %d) at frame %3d ***" % (gap_len, self.max_gap, len(self.buf)))
                 return self._return_audio(False)
 
             else:
-                if gap_len > MAX_GAP:
-                    logging.debug ("*** GAP (%d > %d) TOO LONG at frame %3d ***" % (gap_len, MAX_GAP, len(self.buf)))
+                if gap_len > self.max_gap:
+                    logging.debug ("*** GAP (%d > %d) TOO LONG at frame %3d ***" % (gap_len, self.max_gap, len(self.buf)))
                     self.state = STATE_IDLE
                     return self._return_audio(True)
                 else:
@@ -149,7 +157,7 @@ class VAD(object):
                 self.state = STATE_IGNORE
             else:
                 gap_len = len(self.buf) - self.gap_start
-                if gap_len > MAX_GAP:
+                if gap_len > self.max_gap:
                     logging.debug ("*** end of ignore at frame %3d ***" % len(self.buf))
                     self.state = STATE_IDLE
 
