@@ -18,12 +18,21 @@
 # along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 
+import shutil
+import tempfile
+import os.path
 import unittest
 import logging
 
 from nltools import misc
 
 class TestMisc (unittest.TestCase):
+
+    def setUp(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tearDown(self):
+        shutil.rmtree(self.test_dir)
 
     def test_load_config(self):
 
@@ -65,6 +74,35 @@ class TestMisc (unittest.TestCase):
 
         self.assertEqual(misc.limit_str('1234567890', 10), '1234567890')
         self.assertEqual(misc.limit_str('1234567890',  9), '123456...')
+
+    def test_render_template(self):
+        # given
+        template_text = """VAR1={{val1}}
+        VAR2={{val2}}
+        """
+
+        val1 = "v1"
+        val2 = "v2"
+
+        expected_text = """VAR1=%s
+        VAR2=%s
+        """ % (val1, val2)
+
+        src_path = os.path.join(str(self.test_dir), "src.txt")
+        dst_path = os.path.join(str(self.test_dir), "dst.txt")
+
+        with open(src_path, "wt") as f:
+            f.write(template_text)
+
+        # when
+        misc.render_template(src_path, dst_path, val1=val1, val2=val2)
+
+        # then
+        with open(dst_path) as f:
+            actual_text = f.read()
+
+        self.assertEqual(expected_text, actual_text)
+
 
 if __name__ == "__main__":
 
