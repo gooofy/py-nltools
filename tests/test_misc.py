@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2013, 2014, 2016, 2017 Guenter Bartsch
+# Copyright 2013, 2014, 2016, 2017, 2018 Guenter Bartsch
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU Lesser General Public License as published by
@@ -24,7 +24,8 @@ import os.path
 import unittest
 import logging
 
-from nltools import misc
+from nltools           import misc
+from nltools.tokenizer import tokenize
 
 class TestMisc (unittest.TestCase):
 
@@ -65,10 +66,44 @@ class TestMisc (unittest.TestCase):
 
     def test_edit_distance(self):
 
-        self.assertEqual(misc.edit_distance('hubba', 'hubba'), 0)
-        self.assertEqual(misc.edit_distance('hubba', 'hubb'), 1)
-        self.assertEqual(misc.edit_distance('hubba', 'hub'), 2)
-        self.assertEqual(misc.edit_distance('hubba', 'bba'), 2)
+        self.assertEqual (misc.edit_distance('hubba', 'hubba'), 0)
+        self.assertEqual (misc.edit_distance('hubba', 'hubb'), 1)
+        self.assertEqual (misc.edit_distance('hubba', 'hub'), 2)
+        self.assertEqual (misc.edit_distance('hubba', 'bba'), 2)
+
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'die leistung wurde zurückverlangt'), 
+                             tokenize(u'die leistung wurde zurückverlangt')), 0)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'die leistung wurde'), 
+                             tokenize(u'die leistung wurde zurückverlangt')), 1)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG'), 
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT')), 2)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE'), 
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT')), 3)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE ZURÜCKVERLANGT'), 
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT')), 2)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT'), 
+                             tokenize(u'LEISTUNG WURDE ZURÜCKVERLANGT')), 1)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT'), 
+                             tokenize(u'WURDE ZURÜCKVERLANGT')), 2)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT'), 
+                             tokenize(u'ZURÜCKVERLANGT')), 3)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT'), 
+                             tokenize(u'')), 4)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'DIE LEISTUNG WURDE ZURÜCKVERLANGT'), 
+                             tokenize(u'LEISTUNG FOO ZURÜCKVERLANGT')), 2)
+        self.assertEqual (misc.edit_distance(
+                             tokenize(u'SIE IST FÜR DIE LEISTUNG DANKBAR'), 
+                             tokenize(u'SIE STRITTIG LEISTUNG DANKBAR')), 3)
 
     def test_limit_str(self):
 

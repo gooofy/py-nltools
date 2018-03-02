@@ -776,37 +776,6 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False):
 
     return res
 
-def edit_distance (s, t):
-    # https://en.wikipedia.org/wiki/Wagner%E2%80%93Fischer_algorithm
-
-    # for all i and j, d[i,j] will hold the Levenshtein distance between
-    # the first i words of s and the first j words of t;
-    # note that d has (m+1)x(n+1) values
-    
-    m = len(s)
-    n = len(t)
-
-    d = [[0 for i in range(n+1)] for j in range(m+1)]
-
-    for i in range (m+1):
-        d[i][0] = i                        # the distance of any first seq to an empty second seq
-    for j in range (n+1):
-        d[0][j] = j                         # the distance of any second seq to an empty first seq
-  
-    for j in range (1, n+1):
-        for i in range (1, m+1):
-
-            if s[i-1] == t[j-1]:
-                d[i][j] = d[i-1][j-1]       # no operation required
-            else:
-                d[i][j] = min ([
-                            d[i-1][j] + 1,       # a deletion
-                            d[i][j-1] + 1,       # an insertion
-                            d[i-1][j-1] + 1      # a substitution
-                         ])
-  
-    return d[m][n]
-
 def kill_umlauts(s):
     return s.replace(u'ß',u'ss') \
             .replace(u'Ä',u'Ae') \
