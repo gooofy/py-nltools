@@ -67,7 +67,7 @@ Requirements
 License
 ~~~~~~~
 
-My own code is LGPLv3 licensed unless otherwise noted in the script's copyright
+My own code is Apache-2.0 licensed unless otherwise noted in the script's copyright
 headers.
 
 Some scripts and files are based on works of others, in those cases it is my
