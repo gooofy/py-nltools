@@ -22,6 +22,7 @@
 
 import logging
 import tempfile
+import traceback
 
 import misc
 
@@ -76,7 +77,7 @@ def sequitur_gen_ipa_multi(modelfn, words):
 
         cmd = ['g2p.py', '--model', modelfn, '--apply', f.name]
 
-        res = misc.run_command(cmd)
+        res = misc.run_command(cmd, capture_stderr=False)
 
         logging.debug('%s' % ' '.join(cmd))
 
@@ -89,19 +90,23 @@ def sequitur_gen_ipa_multi(modelfn, words):
             if 'stack usage:' in line:
                 continue
 
-            parts = line.decode('utf8').split('\t')
+            parts = line.decode('utf8', errors='ignore').split('\t')
 
             if len(parts) < 2:
                 continue
 
-            word = parts[0]
-            if word in words:
+            try:
+                word = parts[0]
+                if word in words:
 
-                xs = parts[1]
-                # print 'XS', xs
-           
-                ipa = xsampa2ipa(word, xs)
-                ipa_map[word] = ipa
+                    xs = parts[1]
+                    # print 'XS', xs
+               
+                    ipa = xsampa2ipa(word, xs)
+                    ipa_map[word] = ipa
+            except:
+                logging.error("Error processing line %s:" % line)
+                logging.error(traceback.format_exc())
 
     return ipa_map
 
