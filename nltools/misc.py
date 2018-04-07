@@ -101,10 +101,10 @@ def compress_ws (s):
 
     return res 
 
-def run_command(command):
+def run_command(command, capture_stderr=True):
     p = subprocess.Popen(command,
                          stdout=subprocess.PIPE,
-                         stderr=subprocess.STDOUT)
+                         stderr=subprocess.STDOUT if capture_stderr else subprocess.PIPE)
     return iter(p.stdout.readline, b'')
 
 tex_umlaut_map = { u'ä': '"a', u'ü': '"u', u'ö': '"o', u'Ä':'"A', u'Ü':'"U', u'Ö':'"O', u'ß':'"s' }
