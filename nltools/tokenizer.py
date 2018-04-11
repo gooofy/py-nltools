@@ -611,6 +611,15 @@ wrt = { u'0'             : u'null',
         u'herscht'          : u'herrscht',
         u'oscillirend'      : u'oszillierend',
         u'electro'          : u'elektro',
+        u'theil'            : u'teil',
+        u'todtengräber'     : u'totengräber',
+        u'ausgethan'        : u'ausgetan',
+        u'gethier'          : u'getier',
+        u'thüre'            : u'türe',
+        u'nachtblüthen'     : u'nachtblüten',
+        u'geküßt'           : u'geküsst',
+        u'schooß'           : u'schoß',
+        u'todte'            : u'tote',
 
         u'§'                : u'paragraph'}
 
