@@ -620,6 +620,12 @@ wrt = { u'0'             : u'null',
         u'geküßt'           : u'geküsst',
         u'schooß'           : u'schoß',
         u'todte'            : u'tote',
+        u'zuckerguß'        : u'zuckerguss',
+        u'koloßkopf'        : u'kolosskopf',
+        u'fluß'             : u'fluss',
+        u'müßten'           : u'müssten',
+        u'schriee'          : u'schrie',
+        u'mußten'           : u'mussten',
 
         u'§'                : u'paragraph'}
 
