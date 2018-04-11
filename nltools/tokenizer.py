@@ -626,6 +626,10 @@ wrt = { u'0'             : u'null',
         u'müßten'           : u'müssten',
         u'schriee'          : u'schrie',
         u'mußten'           : u'mussten',
+        u'schinesen'        : u'chinesen',
+        u'formiren'         : u'formieren',
+        u'balancirt'        : u'balanciert',
+        u'nöthigen'         : u'nötigen',
 
         u'§'                : u'paragraph'}
 
