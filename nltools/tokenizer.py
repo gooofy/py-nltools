@@ -784,7 +784,7 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_unde
     global wrt
 
     if lang == 'en':
-        return tokenize_en(s, keep_punctuation, keep_macros)
+        return tokenize_en(s, keep_punctuation, keep_macros, keep_underscores)
 
     if lang != 'de':
         # FIXME
