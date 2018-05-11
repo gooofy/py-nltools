@@ -99,7 +99,7 @@ PUNCTUATION = [
 ]
 
 MACRO_PUNCTUATION = [
-    u'@', u':', u'_' 
+    u'@', u':'
 ]
 
 #####################################################################
@@ -218,7 +218,7 @@ def protect_apostrophe_ll (m):
 
     return s.replace(u"'ll", u"✓ll")
 
-def tokenize_en (s, keep_punctuation=False, keep_macros=False):
+def tokenize_en (s, keep_punctuation=False, keep_macros=False, keep_underscores=True):
 
     global wrt_en, symb_abbrev_norm_en
 
@@ -276,6 +276,8 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False):
         if not keep_macros:
             for p in MACRO_PUNCTUATION:
                 s = s.replace(p,' ')
+        if not keep_underscores:
+            s = s.replace('_',' ')
 
     # re-insert apostrophes
     s = s.replace (u'✓', u"'")
@@ -777,7 +779,7 @@ def spellout_number (m):
     
     return res
 
-def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False):
+def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_underscores=True):
 
     global wrt
 
@@ -812,6 +814,8 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False):
         if not keep_macros:
             for p in MACRO_PUNCTUATION:
                 s = s.replace(p,' ')
+        if not keep_underscores:
+            s = s.replace('_',' ')
 
     # print '#3', s
 

@@ -50,6 +50,7 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"abc, def. zzz!   (      abc<?)"), [u'abc', u'def', u'zzz', u'abc'])
         self.assertEqual (tokenize(u"abc, def. zzz!   (      abc<?)", keep_punctuation=True), 
                           [u'abc', u',', u'def', u'.', u'zzz', u'!', u'(', u'abc', u'<', u'?', u')'])
+        self.assertEqual (tokenize(u"ip_1 ip_2 x_1"), [u'ip_1', u'ip_2', u'x_1'])
 
     def test_tokenize_numbers(self):
 
