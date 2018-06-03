@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2017 Guenter Bartsch
+# Copyright 2017, 2018 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -38,7 +38,7 @@ ASR_ENGINE_POCKETSPHINX = 'pocketsphinx'
 
 DEFAULT_ENGINE          = ASR_ENGINE_NNET3
 DEFAULT_MODEL_DIR       = 'models/kaldi-nnet3-voxforge-en-latest'
-DEFAULT_MODEL_NAME      = 'nnet_tdnn_a'
+DEFAULT_MODEL_NAME      = 'model'
 DEFAULT_STREAM_ID       = '__default__'
 
 DEFAULT_KALDI_BEAM                      = 15.0
