@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2014, 2016, 2017 Guenter Bartsch
+# Copyright 2014, 2016, 2017, 2018 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import logging
 
 from nltools.sequiturclient import sequitur_gen_ipa
 
-MODELFN = 'models/sequitur-voxforge-de-latest'
+MODELFN = 'models/sequitur-dict-de.ipa-latest'
 
 G2P_TESTS = [
                 (u'gelbseidenen',     u"'g\u025blb-za\u026a-d\u0259-n\u0259n", ),

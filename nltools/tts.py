@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2016, 2017 Guenter Bartsch
+# Copyright 2016, 2017, 2018 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ from nltools.pulseplayer    import PulsePlayer
 from nltools.phonetics      import ipa2mary, mary2ipa, ipa2xsampa, xsampa2ipa
 from espeakng               import ESpeakNG
 from marytts                import MaryTTS
-from picotts                import PicoTTS
 
 MARY_VOICES = {
 
@@ -73,7 +72,7 @@ class TTS(object):
             self.player  = PulsePlayer('Local TTS Client')
             self.espeak  = ESpeakNG()
             self.marytts = MaryTTS()
-            self.picotts = PicoTTS()
+            self.picotts = None # lazy-loading to reduce package dependencies
 
     @property
     def locale(self):
@@ -150,12 +149,16 @@ class TTS(object):
 
                 if mode == 'txt':
 
+                    if not self.picotts:
+                        from picotts import PicoTTS
+                        self.picotts = PicoTTS()
+
                     self.picotts.voice = self._voice
                     wav = self.picotts.synth_wav (txt)
                     # logging.debug ('synthesize: %s %s -> %s' % (txt, mode, repr(wav)))
 
                 else:
-                    raise Exception ("unknown espeak mode '%s'" % mode)
+                    raise Exception ("unknown pico mode '%s'" % mode)
             else:
 
                 raise Exception ("unknown engine '%s'" % self.engine)

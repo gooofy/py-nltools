@@ -37,7 +37,7 @@ ASR_ENGINE_NNET3        = 'kaldi-nnet3'
 ASR_ENGINE_POCKETSPHINX = 'pocketsphinx'
 
 DEFAULT_ENGINE          = ASR_ENGINE_NNET3
-DEFAULT_MODEL_DIR       = 'models/kaldi-nnet3-voxforge-en-latest'
+DEFAULT_MODEL_DIR       = 'models/kaldi-generic-en-tdnn_sp-latest'
 DEFAULT_MODEL_NAME      = 'model'
 DEFAULT_STREAM_ID       = '__default__'
 

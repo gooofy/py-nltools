@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2014, 2016, 2017 Guenter Bartsch
+# Copyright 2014, 2016, 2017, 2018 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -26,10 +26,10 @@ from nltools.asr import ASR, ASR_ENGINE_NNET3, ASR_ENGINE_POCKETSPHINX
 from nltools     import misc
 
 TEST_WAVE_EN       = 'tests/foo.wav'
-TEST_WAVE_EN_TS    = 'ah indeed'
+TEST_WAVE_EN_TS    = 'indeed'
 TEST_WAVE_EN_TS_PS = 'aha indeed'
 
-POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-voxforge-en-latest'
+POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-generic-en-latest'
 POCKETSPHINX_MODELNAME = 'voxforge'
 
 class TestASR (unittest.TestCase):
@@ -64,9 +64,6 @@ class TestASR (unittest.TestCase):
             samples = struct.unpack_from('<%dh' % nframes, frames)
 
             s, l = asr.decode(wavf.getframerate(), samples, finalize)
-
-            if not finalize:
-                self.assertEqual(s, None)
 
         wavf.close()
 
