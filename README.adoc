@@ -8,9 +8,9 @@ ifndef::env-github[]
 ....
  +-----------------------------------------------------------------------------------------------+
  |                                           nltools                                             |
- | +-----------+  +-----------+  +------------+                                                  |
- | | tokenizer |  | phonetics |  | threadpool |                                                  |
- | +-----------+  +-----------+  +------------+                                                  |
+ | +-----------+  +-----------+  +------------+  +--------------+                                |
+ | | tokenizer |  | phonetics |  | threadpool |  | macro_engine |                                |
+ | +-----------+  +-----------+  +------------+  +--------------+                                |
  |                                                                                               |
  |      +-----------+               +-----------+     +-----------+ +-----------+ +-----------+  |
  |      |    tts    |               |    asr    |     |    vad    | |    g2p    | |   audio   |  |
@@ -42,6 +42,7 @@ language processing foundation of the Zamia AI project:
 * `tokenizer`: english and german word tokenizer aimed at spoken language applications
 * `threadpool`: simple thread pool implementation
 * `vad`: Voice Activity Detection finite state machine based on webrtc VAD
+* `macro_engine`: Simple macro engine aimed at generating natural language expansions
 
 I plan to add modules as I need them in the Zamia AI projects. Some modules like `phonetics` and `tokenizer`
 have some overlap with larger projects like NLTK or spaCy - my modules tend to be more hands-on and simple minded
