@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name                 = 'py-nltools',
-    version              = '0.1.7',
+    version              = '0.1.8',
     description          = 'A collection of basic python modules for spoken natural language processing',
     long_description     = open('README.md').read(),
     author               = 'Guenter Bartsch',

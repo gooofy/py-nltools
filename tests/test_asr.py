@@ -26,7 +26,7 @@ from nltools.asr import ASR, ASR_ENGINE_NNET3, ASR_ENGINE_POCKETSPHINX
 from nltools     import misc
 
 TEST_WAVE_EN       = 'tests/foo.wav'
-TEST_WAVE_EN_TS    = 'indeed'
+TEST_WAVE_EN_TS    = 'ah indeed'
 TEST_WAVE_EN_TS_PS = 'aha indeed'
 
 POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-generic-en-latest'

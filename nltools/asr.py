@@ -41,9 +41,9 @@ DEFAULT_MODEL_DIR       = 'models/kaldi-generic-en-tdnn_sp-latest'
 DEFAULT_MODEL_NAME      = 'model'
 DEFAULT_STREAM_ID       = '__default__'
 
-DEFAULT_KALDI_BEAM                      = 15.0
-DEFAULT_KALDI_ACOUSTIC_SCALE            = 0.1
-DEFAULT_KALDI_FRAME_SUBSAMPLING_FACTOR  = 1
+DEFAULT_KALDI_BEAM                      = 7.0 # nnet3: 15.0
+DEFAULT_KALDI_ACOUSTIC_SCALE            = 1.0 # nnet3:  0.1
+DEFAULT_KALDI_FRAME_SUBSAMPLING_FACTOR  = 3   # nnet3:  1
 
 class ASR(object):
 
@@ -129,7 +129,7 @@ class ASR(object):
             decoder.decode(sample_rate, np.array(audio, dtype=np.float32), do_finalize)
 
             hstr, confidence = decoder.get_decoded_string()
-            hstr = hstr.decode('utf8').strip()
+            hstr = hstr.strip()
 
         elif self._engine == ASR_ENGINE_POCKETSPHINX:
 
