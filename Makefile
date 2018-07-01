@@ -20,5 +20,5 @@ upload:
 	twine upload dist/*
 
 clean:
-	rm -f *.html *.png 
+	rm -f *.html images/*.png 
 	rm -rf dist build  py_nltools.egg-info  README.md  README.xml 
