@@ -29,7 +29,6 @@ import re
 import struct
 import wave
 import numpy as np
-import pocketsphinx
 
 from base64             import b64encode
 from kaldiasr.nnet3     import KaldiNNet3OnlineModel, KaldiNNet3OnlineDecoder
@@ -75,6 +74,7 @@ class ASR(object):
 
         elif self._engine == ASR_ENGINE_POCKETSPHINX:
 
+            import pocketsphinx
             self.ps_config = pocketsphinx.Decoder.default_config()
 
             # determine CFG_N_TIED_STATES, CFG_WAVFILE_SRATE
@@ -138,6 +138,7 @@ class ASR(object):
                 raise Exception ('decode: samplerate does not match model: %d vs %d' % (sample_rate, self.ps_samplerate))
 
             if not stream_id in self.asr_decoders:
+                import pocketsphinx
                 self.asr_decoders[stream_id] = pocketsphinx.Decoder(self.ps_config)
                 self.asr_in_utt[stream_id] = False
 
