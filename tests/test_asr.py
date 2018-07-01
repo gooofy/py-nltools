@@ -69,6 +69,11 @@ class TestASR (unittest.TestCase):
 
         self.assertEqual(s.strip(), TEST_WAVE_EN_TS)
 
+    def test_asr_kaldi_wavefile(self):
+        asr = ASR(engine = ASR_ENGINE_NNET3)
+        s, l = asr.decode_wav_file(TEST_WAVE_EN)
+        self.assertEqual(s.strip(), TEST_WAVE_EN_TS)
+
     def test_asr_pocketsphinx(self):
 
         asr = ASR(engine = ASR_ENGINE_POCKETSPHINX, model_dir = POCKETSPHINX_MODELDIR, model_name = POCKETSPHINX_MODELNAME)
@@ -105,6 +110,11 @@ class TestASR (unittest.TestCase):
 
         wavf.close()
 
+        self.assertEqual(s.strip(), TEST_WAVE_EN_TS_PS)
+
+    def test_asr_pocketsphinx_wavefile(self):
+        asr = ASR(engine = ASR_ENGINE_POCKETSPHINX, model_dir = POCKETSPHINX_MODELDIR, model_name = POCKETSPHINX_MODELNAME)
+        s, l = asr.decode_wav_file(TEST_WAVE_EN)
         self.assertEqual(s.strip(), TEST_WAVE_EN_TS_PS)
 
 

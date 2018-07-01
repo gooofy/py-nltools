@@ -27,6 +27,7 @@ import logging
 import time
 import re
 import struct
+import wave
 import numpy as np
 import pocketsphinx
 
@@ -186,4 +187,25 @@ class ASR(object):
     # @model_name.setter
     # def model_name(self, v):
     #     self._model_name = v
+
+    def decode_wav_file(self, wavfile):
+
+        wavf = wave.open(wavfile, 'rb')
+
+        # check format
+        assert wavf.getnchannels()==1
+        assert wavf.getsampwidth()==2
+        assert wavf.getnframes()>0
+
+        sample_rate = wavf.getframerate()
+
+        # read the whole file into memory, for now
+        num_frames = wavf.getnframes()
+        frames = wavf.readframes(num_frames)
+
+        samples = struct.unpack_from('<%dh' % num_frames, frames)
+
+        wavf.close()
+
+        return self.decode(sample_rate, samples, True)
 
