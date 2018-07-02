@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2013, 2014, 2016, 2017 Guenter Bartsch
+# Copyright 2013, 2014, 2016, 2017, 2018 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@
 # simple pulseaudio playback client
 #
 
-import StringIO
+from io import BytesIO
 import wave
 import copy
 import ctypes
@@ -147,7 +147,7 @@ class PulsePlayer:
             self.playing   = True
             self.a_sound   = copy.copy(a_sound)
 
-            self.wf = wave.open(StringIO.StringIO(self.a_sound), 'rb')
+            self.wf = wave.open(BytesIO.BytesIO(self.a_sound), 'rb')
 
             self.ss = pa_sample_spec()
 
