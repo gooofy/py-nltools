@@ -147,7 +147,7 @@ class PulsePlayer:
             self.playing   = True
             self.a_sound   = copy.copy(a_sound)
 
-            self.wf = wave.open(BytesIO.BytesIO(self.a_sound), 'rb')
+            self.wf = wave.open(BytesIO(self.a_sound), 'rb')
 
             self.ss = pa_sample_spec()
 
