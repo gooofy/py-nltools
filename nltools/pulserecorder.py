@@ -26,6 +26,7 @@ import threading
 import logging
 
 import numpy as np
+from builtins import str as text
 
 pa = ctypes.cdll.LoadLibrary('libpulse.so.0')
 
@@ -304,7 +305,7 @@ class PulseRecorder(object):
 
         self._mainloop = pa_threaded_mainloop_new()
         _mainloop_api  = pa_threaded_mainloop_get_api(self._mainloop)
-        self._context  = pa_context_new(_mainloop_api, 'HAL 9000 Ears')
+        self._context  = pa_context_new(_mainloop_api, b'HAL 9000 Ears')
 
         pa_context_set_state_callback(self._context, self._context_notify_cb, None)
         pa_context_connect(self._context, None, 0, None)
@@ -349,7 +350,7 @@ class PulseRecorder(object):
         logging.debug('name        : %s' % source_info.name)
         logging.debug('description : %s' % source_info.description)
 
-        if self.source_name in source_info.description:
+        if text(self.source_name) in text(source_info.description):
 
             #
             # set volume first
