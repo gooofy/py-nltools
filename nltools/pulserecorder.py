@@ -26,7 +26,7 @@ import threading
 import logging
 
 import numpy as np
-from builtins import str as text
+from builtins import str as text, range
 
 pa = ctypes.cdll.LoadLibrary('libpulse.so.0')
 
@@ -358,7 +358,7 @@ class PulseRecorder(object):
 
             cvol = pa_cvolume()
             cvol.channels = 1
-            cvol.values[0] = (self.volume * PA_VOLUME_NORM) / 100
+            cvol.values[0] = int((self.volume * PA_VOLUME_NORM) / 100)
 
             operation = pa_context_set_source_volume_by_index (self._context, source_info.index, cvol, self._null_cb, None)
             pa_operation_unref(operation)
@@ -370,7 +370,7 @@ class PulseRecorder(object):
             samplespec.format = PA_SAMPLE_S16LE
             samplespec.rate = self.rate
 
-            pa_stream = pa_stream_new(context, "pulserecorder", samplespec, None)
+            pa_stream = pa_stream_new(context, b"pulserecorder", samplespec, None)
             pa_stream_set_read_callback(pa_stream,
                                         self._stream_read_cb,
                                         source_info.index)
@@ -393,7 +393,7 @@ class PulseRecorder(object):
 
         self._lock.acquire()
 
-        for i in xrange(length/2):
+        for i in range(int(length/2)):
 
             sample = data[i*2] + 256 * data[i*2+1]
 
