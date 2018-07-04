@@ -28,6 +28,8 @@ import wave
 import sys
 import logging
 
+from builtins import str as text
+
 from threading import Thread, Lock, Condition
 
 pa = ctypes.cdll.LoadLibrary('libpulse-simple.so.0')
@@ -88,7 +90,7 @@ pa_simple_free.argtypes = [ ctypes.c_void_p ]
 class PulsePlayer:
 
     def __init__(self, name):
-        self.name      = name
+        self.name      = text(name)
         self.playing   = False
         self.terminate = False
         self.thread    = None
@@ -108,7 +110,7 @@ class PulsePlayer:
         
             # Reading frames and writing to the stream.
             buf = self.wf.readframes(BUFFSIZE)
-            if buf == '':
+            if not buf:
                 break
 
             # logging.debug("_play_loop len: %d self.s: %s" % (len(buf), repr(self.s)))
@@ -161,10 +163,10 @@ class PulsePlayer:
     
             self.s = pa_simple_new(
                 None,                    # Default server.
-                self.name,               # Application's name.
+                self.name.encode('utf8'),# Application's name.
                 PA_STREAM_PLAYBACK,      # Stream for playback.
                 None,                    # Default device.
-                'playback',              # Stream's description.
+                b'playback',             # Stream's description.
                 ctypes.byref(self.ss),   # Sample format.
                 None,                    # Default channel map.
                 None,                    # Default buffering attributes.
