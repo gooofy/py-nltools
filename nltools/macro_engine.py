@@ -28,6 +28,7 @@
 import logging
 
 from copy                import copy
+from past.builtins       import basestring
 
 from nltools.tokenizer   import tokenize
 
