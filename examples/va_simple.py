@@ -6,10 +6,6 @@ from nltools.asr           import ASR
 from nltools.pulserecorder import PulseRecorder
 from nltools.vad           import VAD, BUFFER_DURATION
 from nltools.tts           import TTS
-from nltools.macro_engine  import MacroEngine
-from nltools.misc          import edit_distance
-from nltools.tokenizer     import tokenize
-from eliza                 import eliza
 
 MODELDIR            = '/opt/kaldi/model/kaldi-generic-en-tdnn_250'
 
@@ -18,28 +14,21 @@ FRAMES_PER_BUFFER   = int(SAMPLE_RATE * BUFFER_DURATION / 1000)
 SOURCE              = 'CM108'
 VOLUME              = 150
 AGGRESSIVENESS      = 2
-ED_THRESHOLD        = 2
 
 class Intent(Enum):
     HELLO     = 1
     LIGHT     = 2
     RADIO     = 3
 
-print ("Initializing....")
-
-me = MacroEngine()
-
 utterance_map = {}
-def add_utterance (pattern, intent):
-    for utterance, t in me.expand_macros('en', pattern):
-        utt = ' '.join(utterance)
-        utterance_map[utt] = intent
+def add_utterance (utterance, intent):
+    utterance_map[utterance] = intent
 
-add_utterance("(hi|hello|ok) (computer|machine|raspberry)",                      Intent.HELLO)
-add_utterance("(computer|) (please|) (turn|switch) (on|off) the (light|lights)", Intent.LIGHT)
-add_utterance("(computer|) (please|) (turn|switch) the (light|lights) (on|off)", Intent.LIGHT)
-add_utterance("(computer|) (please|) (turn|switch) (on|off) the (music|radio)",  Intent.RADIO)
-add_utterance("(computer|) (please|) (turn|switch) the (music|radio) (on|off)",  Intent.RADIO)
+add_utterance("hello computer",        Intent.HELLO)
+add_utterance("switch on the lights",  Intent.LIGHT)
+add_utterance("switch off the lights", Intent.LIGHT)
+add_utterance("switch on the radio",   Intent.RADIO)
+add_utterance("switch off the radio",  Intent.RADIO)
 
 radio_on  = False
 lights_on = False
@@ -52,9 +41,9 @@ vad = VAD(aggressiveness=AGGRESSIVENESS, sample_rate=SAMPLE_RATE)
 
 tts = TTS(engine="espeak", voice="en")
 
-eliza = eliza()
-
 rec.start_recording(FRAMES_PER_BUFFER)
+
+intent = None
 
 print ("Please speak.")
 
@@ -74,14 +63,7 @@ while True:
     if finalize:
         print ()
 
-        best_dist = ED_THRESHOLD
-        intent = None
-        for utt in utterance_map:
-            dist = edit_distance (tokenize (utt, lang='en'), tokenize (user_utt, lang='en'))
-            if ( dist < ED_THRESHOLD ) and ( dist < best_dist ):
-                best_dist = dist
-                intent = utterance_map[utt]
-
+        intent = utterance_map.get(user_utt, None)
         if intent == Intent.HELLO:
             resp = "Hello there!"
 
@@ -99,11 +81,9 @@ while True:
                 resp = "OK, switching on the radio."
             radio_on = not radio_on
 
-        if not intent:
-            resp = eliza.respond (user_utt)
-
-        rec.stop_recording()
-        print (resp)
-        tts.say(resp)
-        rec.start_recording(FRAMES_PER_BUFFER)
+        if intent:
+            rec.stop_recording()
+            print (resp)
+            tts.say(resp)
+            rec.start_recording(FRAMES_PER_BUFFER)
 
