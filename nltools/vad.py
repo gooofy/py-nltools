@@ -43,6 +43,10 @@ STATE_GAP             =  4
 STATE_IGNORE          =  5
 STATE_IGNORE_GAP      =  6
 
+FRAME_STAT_CNT        =   300
+LOW_VOLUME_THRESH     =   100
+HIGH_VOLUME_THRESH    = 25000
+
 class VAD(object):
 
     def __init__(self, aggressiveness=2, sample_rate=SAMPLE_RATE,
@@ -64,6 +68,10 @@ class VAD(object):
         self.max_buf_entries = int(max_utt_length * 1000) / BUFFER_DURATION
         self.max_gap         = int(max_utt_gap    * 1000) / BUFFER_DURATION
 
+        self.frame_cnt       = 0
+        self.avg_vol_sum     = 0.0
+        self.avg_vol_cnt     = 0
+
     def _return_audio (self, finalize):
 
         res = []
@@ -79,6 +87,25 @@ class VAD(object):
     def process_audio (self, audio):
 
         cur_frame = audio
+
+        # give feedback if volume too low / too high
+        if self.frame_cnt <= FRAME_STAT_CNT:
+
+            for sample in audio:
+                self.avg_vol_sum += abs(sample)
+                self.avg_vol_cnt += 1
+
+            self.frame_cnt += 1
+            if self.frame_cnt == FRAME_STAT_CNT:
+
+                # import pdb; pdb.set_trace()
+
+                self.avg_vol_sum /= float(self.avg_vol_cnt)
+
+                if self.avg_vol_sum < LOW_VOLUME_THRESH:
+                    logging.error ('VAD: audio volume too low or wrong source?')
+                elif self.avg_vol_sum > HIGH_VOLUME_THRESH:
+                    logging.error ('VAD: audio volume too high or wrong source?')
 
         vad_res = self.vad.is_speech(audio.tobytes(), self.sample_rate)
 
