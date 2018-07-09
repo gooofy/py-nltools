@@ -24,9 +24,13 @@
 import ctypes
 import threading
 import logging
+import time
 
 import numpy as np
 from builtins import str as text, range
+from nltools.vad import BUFFER_DURATION
+
+SOURCE_TIMEOUT = 30 # 3 seconds
 
 pa = ctypes.cdll.LoadLibrary('libpulse.so.0')
 
@@ -274,12 +278,19 @@ pa_stream_drop.argtypes = [ctypes.POINTER(pa_stream)]
 def null_cb(a=None, b=None, c=None, d=None):
     return
 
+DEFAULT_VOLUME            =   100
+DEFAULT_RATE              = 16000
+DEFAULT_NAME              = b'Python PulseRecorder'
+DEFAULT_FRAMES_PER_BUFFER = int(DEFAULT_RATE * BUFFER_DURATION / 1000)
+
 class PulseRecorder(object):
 
-    def __init__(self, source_name, rate, volume):
+    def __init__(self, volume=DEFAULT_VOLUME, rate=DEFAULT_RATE, source_name=None):
         self.source_name = source_name
         self.rate        = rate
         self.volume      = volume
+        self.source_idx  = -1
+        self.source_log  = False
 
         # Wrap callback methods in appropriate ctypefunc instances so
         # that the Pulseaudio C API can call them
@@ -293,7 +304,7 @@ class PulseRecorder(object):
         self._lock = threading.Lock()
         self._cond = threading.Condition(self._lock) 
 
-    def start_recording(self, frames_per_buffer):
+    def start_recording(self, frames_per_buffer = DEFAULT_FRAMES_PER_BUFFER):
 
         logging.debug("start_recording...")
 
@@ -305,12 +316,21 @@ class PulseRecorder(object):
 
         self._mainloop = pa_threaded_mainloop_new()
         _mainloop_api  = pa_threaded_mainloop_get_api(self._mainloop)
-        self._context  = pa_context_new(_mainloop_api, b'HAL 9000 Ears')
+        self._context  = pa_context_new(_mainloop_api, DEFAULT_NAME)
 
         pa_context_set_state_callback(self._context, self._context_notify_cb, None)
         pa_context_connect(self._context, None, 0, None)
 
         pa_threaded_mainloop_start(self._mainloop)
+
+        # wait for audio source detection
+        cnt = 0
+        while (self.source_idx < 0) and (cnt < SOURCE_TIMEOUT):
+            cnt += 1
+            time.sleep (0.1)
+        if self.source_idx < 0:
+            raise Exception ("Pulserecorder: no suitable input source found.")
+
 
     def stop_recording(self):
 
@@ -323,6 +343,8 @@ class PulseRecorder(object):
 
         pa_threaded_mainloop_stop(self._mainloop)
         pa_threaded_mainloop_free(self._mainloop)
+
+        self.source_idx  = -1
 
     def context_notify_cb(self, context, _):
         state = pa_context_get_state(context)
@@ -342,6 +364,10 @@ class PulseRecorder(object):
         if not source_info_p:
             return
 
+        if self.source_idx >=0:
+            # already connected.
+            return
+
         logging.debug("source_info_cb...")
 
         source_info = source_info_p.contents
@@ -350,41 +376,65 @@ class PulseRecorder(object):
         logging.debug('name        : %s' % source_info.name)
         logging.debug('description : %s' % source_info.description)
 
-        if text(self.source_name) in text(source_info.description):
+        if self.source_name:
+            if not (text(self.source_name) in text(source_info.description)):
+                return
+        else:
+            # microphone source auto-detection magic
 
-            #
-            # set volume first
-            #
+            # import pdb; pdb.set_trace()
 
-            cvol = pa_cvolume()
-            cvol.channels = 1
-            cvol.values[0] = int((self.volume * PA_VOLUME_NORM) / 100)
+            if not source_info.ports:
+                return
 
-            operation = pa_context_set_source_volume_by_index (self._context, source_info.index, cvol, self._null_cb, None)
-            pa_operation_unref(operation)
+            mic_port = False
+            for pi in range(source_info.n_ports):
+                if text('mic') in text(source_info.ports[pi].contents.name):
+                    mic_port = True
+                    break
+            if not mic_port:
+                return
 
-            logging.debug('recording from %s' % source_info.name)
+            if not self.source_log:
+                logging.info(u'audio source: %s' % source_info.description.decode('utf8','ignore'))
+                logging.debug(u'name: %s' % text(source_info.name) )
+                self.source_log = True
 
-            samplespec = pa_sample_spec()
-            samplespec.channels = 1
-            samplespec.format = PA_SAMPLE_S16LE
-            samplespec.rate = self.rate
+        self.source_idx = source_info.index
 
-            pa_stream = pa_stream_new(context, b"pulserecorder", samplespec, None)
-            pa_stream_set_read_callback(pa_stream,
-                                        self._stream_read_cb,
-                                        source_info.index)
+        #
+        # set volume first
+        #
 
-            # flags = PA_STREAM_NOFLAGS
-            flags = PA_STREAM_ADJUST_LATENCY
-            
-            # buffer_attr = None
-            buffer_attr = pa_buffer_attr(-1, -1, -1, -1, fragsize=self._frames_per_buffer*2)
+        cvol = pa_cvolume()
+        cvol.channels = 1
+        cvol.values[0] = int((self.volume * PA_VOLUME_NORM) / 100)
 
-            pa_stream_connect_record(pa_stream,
-                                     source_info.name,
-                                     buffer_attr,
-                                     flags)
+        operation = pa_context_set_source_volume_by_index (self._context, source_info.index, cvol, self._null_cb, None)
+        pa_operation_unref(operation)
+
+        logging.debug('recording from %s' % source_info.name)
+
+        samplespec = pa_sample_spec()
+        samplespec.channels = 1
+        samplespec.format = PA_SAMPLE_S16LE
+        samplespec.rate = self.rate
+
+        pa_stream = pa_stream_new(context, b"pulserecorder", samplespec, None)
+        pa_stream_set_read_callback(pa_stream,
+                                    self._stream_read_cb,
+                                    source_info.index)
+
+        # flags = PA_STREAM_NOFLAGS
+        flags = PA_STREAM_ADJUST_LATENCY
+        
+        # buffer_attr = None
+        buffer_attr = pa_buffer_attr(-1, -1, -1, -1, fragsize=self._frames_per_buffer*2)
+
+        pa_stream_connect_record(pa_stream,
+                                 source_info.name,
+                                 buffer_attr,
+                                 flags)
 
     def stream_read_cb(self, stream, length, index_incr):
         data = ctypes.c_void_p()
