@@ -63,7 +63,7 @@ class TestASR (unittest.TestCase):
             num_frames += nframes
             samples = struct.unpack_from('<%dh' % nframes, frames)
 
-            s, l = asr.decode(wavf.getframerate(), samples, finalize)
+            s, l = asr.decode(samples, finalize, wavf.getframerate())
 
         wavf.close()
 
@@ -103,7 +103,7 @@ class TestASR (unittest.TestCase):
             num_frames += nframes
             samples = struct.unpack_from('<%dh' % nframes, frames)
 
-            s, l = asr.decode(wavf.getframerate(), samples, finalize)
+            s, l = asr.decode(samples, finalize, wavf.getframerate())
 
             if not finalize:
                 self.assertEqual(s, None)

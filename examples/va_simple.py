@@ -1,15 +1,13 @@
 #!/usr/bin/env python3
-
+import logging
+logging.basicConfig(level=logging.INFO)
 from enum                  import Enum
 from nltools.asr           import ASR
 from nltools.pulserecorder import PulseRecorder
-from nltools.vad           import VAD, BUFFER_DURATION
+from nltools.vad           import VAD
 from nltools.tts           import TTS
 
 MODELDIR          = '/opt/kaldi/model/kaldi-generic-en-tdnn_250'
-SAMPLE_RATE       = 16000
-FRAMES_PER_BUFFER = int(SAMPLE_RATE * BUFFER_DURATION / 1000)
-SOURCE            = 'CM108'
 VOLUME            = 150
 
 class Intent(Enum):
@@ -17,10 +15,12 @@ class Intent(Enum):
     LIGHT     = 2
     RADIO     = 3
 
+print ("Initializing...")
+
 radio_on  = False
 lights_on = False
 asr       = ASR(model_dir = MODELDIR)
-rec       = PulseRecorder (SOURCE, SAMPLE_RATE, VOLUME)
+rec       = PulseRecorder (volume=VOLUME)
 vad       = VAD()
 tts       = TTS(engine="espeak", voice="en")
 
@@ -34,8 +34,8 @@ add_utt("switch off the lights", Intent.LIGHT)
 add_utt("switch on the radio",   Intent.RADIO)
 add_utt("switch off the radio",  Intent.RADIO)
 
-rec.start_recording(FRAMES_PER_BUFFER)
-print ("Please speak.")
+rec.start_recording()
+print ("Please speak. (CTRL-C to exit)")
 
 while True:
     samples = rec.get_samples()
@@ -43,8 +43,8 @@ while True:
     if not audio:
         continue
 
-    user_utt, c = asr.decode(SAMPLE_RATE, audio, finalize)
-    print ("\r%s         " % user_utt, end='', flush=True)
+    user_utt, c = asr.decode(audio, finalize)
+    print ("\r%s           " % user_utt, end='', flush=True)
 
     if finalize:
         print ()
@@ -70,4 +70,4 @@ while True:
         rec.stop_recording()
         print (resp)
         tts.say(resp)
-        rec.start_recording(FRAMES_PER_BUFFER)
+        rec.start_recording()

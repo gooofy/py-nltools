@@ -31,7 +31,7 @@ class TestPulseRecorder (unittest.TestCase):
 
     def test_rec(self):
 
-        recorder = PulseRecorder(SOURCE, SAMPLERATE, VOLUME)
+        recorder = PulseRecorder(source_name=SOURCE, rate=SAMPLERATE, volume=VOLUME)
         recorder.start_recording(1000)
         time.sleep(1)
         recorder.stop_recording()
@@ -42,7 +42,6 @@ class TestPulseRecorder (unittest.TestCase):
 
         self.assertGreater (len(samples), 900)
         
-
 
 if __name__ == "__main__":
 
