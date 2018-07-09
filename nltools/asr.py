@@ -40,6 +40,7 @@ DEFAULT_ENGINE          = ASR_ENGINE_NNET3
 DEFAULT_MODEL_DIR       = 'models/kaldi-generic-en-tdnn_sp-latest'
 DEFAULT_MODEL_NAME      = 'model'
 DEFAULT_STREAM_ID       = '__default__'
+DEFAULT_SAMPLE_RATE     = 16000
 
 DEFAULT_KALDI_BEAM                      = 7.0 # nnet3: 15.0
 DEFAULT_KALDI_ACOUSTIC_SCALE            = 1.0 # nnet3:  0.1
@@ -119,7 +120,7 @@ class ASR(object):
         else:
             raise Exception ('unknown ASR engine: %s' % self._engine)
 
-    def decode (self, sample_rate, audio, do_finalize, stream_id = DEFAULT_STREAM_ID):
+    def decode (self, audio, do_finalize, sample_rate = DEFAULT_SAMPLE_RATE, stream_id = DEFAULT_STREAM_ID):
 
         if self._engine == ASR_ENGINE_NNET3:
 
@@ -208,5 +209,5 @@ class ASR(object):
 
         wavf.close()
 
-        return self.decode(sample_rate, samples, True)
+        return self.decode(samples, True, sample_rate)
 
