@@ -32,6 +32,8 @@ from nltools.vad import BUFFER_DURATION
 
 SOURCE_TIMEOUT = 30 # 3 seconds
 
+PA_INVALID_INDEX = 4294967295 # ((uint32_t) -1)
+
 pa = ctypes.cdll.LoadLibrary('libpulse.so.0')
 
 class pa_proplist(ctypes.Structure):
@@ -375,6 +377,11 @@ class PulseRecorder(object):
         logging.debug('index       : %d' % source_info.index)
         logging.debug('name        : %s' % source_info.name)
         logging.debug('description : %s' % source_info.description)
+        logging.debug('monitor of  : %d' % source_info.monitor_of_sink)
+
+        if source_info.monitor_of_sink != PA_INVALID_INDEX:
+            logging.debug("ignoring monitor")
+            return
 
         if self.source_name:
             if not (text(self.source_name) in text(source_info.description)):
