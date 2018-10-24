@@ -280,10 +280,15 @@ pa_stream_drop.argtypes = [ctypes.POINTER(pa_stream)]
 def null_cb(a=None, b=None, c=None, d=None):
     return
 
+MIX_MODE_BOTH             = 0
+MIX_MODE_LEFT             = 1
+MIX_MODE_RIGHT            = 2
+
 DEFAULT_VOLUME            =   100
 DEFAULT_RATE              = 16000
 DEFAULT_NAME              = b'Python PulseRecorder'
 DEFAULT_FRAMES_PER_BUFFER = int(DEFAULT_RATE * BUFFER_DURATION / 1000)
+DEFAULT_MIX_MODE          = MIX_MODE_BOTH
 
 class PulseRecorder(object):
 
@@ -309,11 +314,13 @@ class PulseRecorder(object):
         self._lock = threading.Lock()
         self._cond = threading.Condition(self._lock) 
 
-    def start_recording(self, frames_per_buffer = DEFAULT_FRAMES_PER_BUFFER):
+    def start_recording(self, frames_per_buffer = DEFAULT_FRAMES_PER_BUFFER, mix_mode = DEFAULT_MIX_MODE):
 
         logging.debug("start_recording...")
 
         self._frames_per_buffer = frames_per_buffer
+        self._mix_mode          = mix_mode
+        self._record_stereo     = mix_mode != MIX_MODE_BOTH
         self._buffers           = []
         self._cur_buf_cnt       = 0
 
@@ -391,9 +398,9 @@ class PulseRecorder(object):
             logging.debug('recording from %s' % self.source_name)
 
             samplespec = pa_sample_spec()
-            samplespec.channels = 1
-            samplespec.format = PA_SAMPLE_S16LE
-            samplespec.rate = self.rate
+            samplespec.channels = 2 if self._record_stereo else 1
+            samplespec.format   = PA_SAMPLE_S16LE
+            samplespec.rate     = self.rate
 
             pa_stream = pa_stream_new(context, b"pulserecorder", samplespec, None)
             pa_stream_set_read_callback(pa_stream,
@@ -404,7 +411,10 @@ class PulseRecorder(object):
             flags = PA_STREAM_ADJUST_LATENCY
             
             # buffer_attr = None
-            buffer_attr = pa_buffer_attr(-1, -1, -1, -1, fragsize=self._frames_per_buffer*2)
+            fragsize = self._frames_per_buffer*2
+            if self._record_stereo:
+                fragsize *= 2
+            buffer_attr = pa_buffer_attr(-1, -1, -1, -1, fragsize=fragsize)
 
             pa_stream_connect_record(pa_stream,
                                      self.source_name,
@@ -462,9 +472,22 @@ class PulseRecorder(object):
 
         self._lock.acquire()
 
-        for i in range(int(length/2)):
+        bytes_per_sample = 4 if self._record_stereo else 2
+        num_samples = int(length / bytes_per_sample)
 
-            sample = data[i*2] + 256 * data[i*2+1]
+        for i in range(num_samples):
+
+            if self._mix_mode == MIX_MODE_BOTH:
+                off_low  = 0
+                off_high = 1
+            elif self._mix_mode == MIX_MODE_LEFT:
+                off_low  = 0
+                off_high = 1
+            elif self._mix_mode == MIX_MODE_RIGHT:
+                off_low  = 2
+                off_high = 3
+
+            sample = data[i*bytes_per_sample +off_low ] + 256 * data[i*bytes_per_sample+off_high]
 
             self._buffers[len(self._buffers)-1][self._cur_buf_cnt] = sample
             self._cur_buf_cnt += 1 
