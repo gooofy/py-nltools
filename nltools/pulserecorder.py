@@ -323,6 +323,11 @@ class PulseRecorder(object):
         self._record_stereo     = mix_mode != MIX_MODE_BOTH
         self._buffers           = []
         self._cur_buf_cnt       = 0
+        self.source_idx         = -1
+        self.source_score       = 0
+        self.source_log         = False
+        self.source_name        = ''
+        self.source_description = ''
 
         self._buffers.append(np.empty(self._frames_per_buffer, dtype=np.int16))
 
