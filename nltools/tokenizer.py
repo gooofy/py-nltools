@@ -408,6 +408,16 @@ wrt = { u'0'             : u'null',
         u'stop'          : u'stopp',
         u'colour'        : u'color',
 
+        u'rußland'       : u'russland',
+        u'anläßlich'     : u'anlässlich',
+        u'befaßte'       : u'befasste',
+        u'entschloß'     : u'entschloss',
+        u'erfaßbarer'    : u'erfassbarer',
+        u'kuß'           : u'kuss',
+        u'nuß'           : u'nuss',
+        u'prozeß'        : u'prozess',
+        u'schellenaß'    : u'schellenass',
+
         # umlauts...
 
         u'aendern'             : u'ändern',
