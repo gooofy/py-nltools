@@ -436,6 +436,15 @@ wrt = { u'0'             : u'null',
         u'pfeill'        : u'pfeil',
         u'thun'          : u'tun',
 
+        u'bewußtsein'    : u'bewusstsein',
+        u'beschloß'      : u'beschloss',
+        u'vergiß'        : u'vergiss',
+        u'mißtrauisch'   : u'misstrauisch',
+        u'faßt'          : u'fasst',
+        u'verdruß'       : u'verdruss',
+        u'naß'           : u'nass',
+        u'beschluß'      : u'beschluss',
+
         # umlauts...
 
         u'aendern'             : u'ändern',
