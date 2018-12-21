@@ -83,6 +83,13 @@ pa_simple_write.argtypes = [
                             ctypes.POINTER(ctypes.c_int), # error 
                            ]
 
+pa_simple_drain = pa.pa_simple_drain
+pa_simple_drain.restype = ctypes.c_int
+pa_simple_drain.argtypes = [
+                            ctypes.c_void_p,              # s
+                            ctypes.POINTER(ctypes.c_int), # error 
+                           ]
+
 pa_simple_free = pa.pa_simple_free
 pa_simple_free.restype = None
 pa_simple_free.argtypes = [ ctypes.c_void_p ]
@@ -119,6 +126,9 @@ class PulsePlayer:
                 raise Exception('Could not play file, error: %d!' % self.error.value)
         
         self.wf.close()
+
+        if pa_simple_drain(self.s, ctypes.byref(self.error)):
+            raise Exception('Could not simple drain!')
 
         # Freeing resources and closing connection.
         logging.debug ('pa.pa_simple_free %s...' % repr(self.s))
@@ -190,13 +200,6 @@ class PulsePlayer:
             try:
                 while self.playing:
                     self.cond.wait()
-
-                # logging.debug ('drain...')
-
-                # # Waiting for all sent data to finish playing.
-
-                # if pa.pa_simple_drain(self.s, ctypes.byref(self.error)):
-                #     raise Exception('Could not simple drain!')
 
                 self.thread.join()
                 self.thread = None
