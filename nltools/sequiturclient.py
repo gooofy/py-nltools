@@ -52,7 +52,7 @@ def sequitur_gen_ipa(modelfn, word):
             if 'stack usage:' in line:
                 continue
 
-            if word in line.decode('utf8'):
+            if word in line.decode('utf8', errors='ignore'):
                 parts = line.split('\t')
 
                 if len(parts) < 2:
