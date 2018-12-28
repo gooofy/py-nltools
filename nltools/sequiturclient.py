@@ -37,7 +37,7 @@ def sequitur_gen_ipa(modelfn, word):
         f.write((u'%s\n' % word).encode('utf8'))
         f.flush()
 
-        cmd = ['g2p.py', '--model', modelfn, '--apply', f.name]
+        cmd = ['g2p.py', '--encoding=UTF8', '--model', modelfn, '--apply', f.name]
 
         res = misc.run_command(cmd)
 
@@ -75,7 +75,7 @@ def sequitur_gen_ipa_multi(modelfn, words):
             f.write((u'%s\n' % word).encode('utf8'))
         f.flush()
 
-        cmd = ['g2p.py', '--model', modelfn, '--apply', f.name]
+        cmd = ['g2p.py', '--encoding=UTF8', '--model', modelfn, '--apply', f.name]
 
         res = misc.run_command(cmd, capture_stderr=False)
 

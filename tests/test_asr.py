@@ -27,7 +27,7 @@ from nltools     import misc
 
 TEST_WAVE_EN       = 'tests/foo.wav'
 TEST_WAVE_EN_TS    = 'ah indeed'
-TEST_WAVE_EN_TS_PS = 'aha indeed'
+TEST_WAVE_EN_TS_PS = 'aha in dayton'
 
 POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-generic-en-latest'
 POCKETSPHINX_MODELNAME = 'voxforge'
