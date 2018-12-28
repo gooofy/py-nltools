@@ -25,8 +25,9 @@ from nltools.sequiturclient import sequitur_gen_ipa
 MODELFN = 'models/sequitur-dict-de.ipa-latest'
 
 G2P_TESTS = [
-                (u'gelbseidenen',     u"'g\u025blb-za\u026a-d\u0259-n\u0259n", ),
-                (u'unmute',           u"'\u0294\u028an-mu\u02d0-t\u0259",      ),
+                (u'gelbseidenen',     u"'g\u025blb-za\u026a-d\u0259-n\u0259n"   ),
+                (u'unmute',           u"'\u0294\u028an-mu\u02d0-t\u0259"        ),
+                (u'übereilt',         u"\u0294y\u02d0-b\u0250-'\u0294a\u026alt" ),
             ]
 
 class TestSequitur (unittest.TestCase):
