@@ -293,7 +293,7 @@ DEFAULT_MIX_MODE          = MIX_MODE_BOTH
 class PulseRecorder(object):
 
     def __init__(self, volume=DEFAULT_VOLUME, rate=DEFAULT_RATE, source_name=None):
-        self.source_name        = source_name
+        self.match_source_name  = source_name
         self.rate               = rate
         self.volume             = volume
         self.source_idx         = -1
@@ -442,7 +442,7 @@ class PulseRecorder(object):
 
         score = 1
 
-        if self.source_name and (text(self.source_name) in text(source_info.description)):
+        if self.match_source_name and (text(self.match_source_name) in text(source_info.description)):
             score += 100
 
 
