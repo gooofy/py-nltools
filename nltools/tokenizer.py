@@ -270,6 +270,9 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False, keep_underscores=
     if keep_punctuation:
         for p in PUNCTUATION:
             s = s.replace (p, u' ' + p + u' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace (p, u' ' + p + u' ')
     else:
         for p in PUNCTUATION:
             s = s.replace(p,' ')
@@ -8250,6 +8253,9 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_unde
     if keep_punctuation:
         for p in PUNCTUATION:
             s = s.replace (p, u' ' + p + u' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace (p, u' ' + p + u' ')
     else:
         for p in PUNCTUATION:
             s = s.replace(p,' ')

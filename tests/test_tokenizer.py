@@ -51,6 +51,9 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"abc, def. zzz!   (      abc<?)", keep_punctuation=True), 
                           [u'abc', u',', u'def', u'.', u'zzz', u'!', u'(', u'abc', u'<', u'?', u')'])
         self.assertEqual (tokenize(u"ip_1 ip_2 x_1"), [u'ip_1', u'ip_2', u'x_1'])
+# Sowie das zauberische Fuhrwerk im dichten Gebüsch verschwand, noch im sanften Nachhallen der Harmonikatöne, fiel Balthasar, ganz außer sich vor Wonne und Entzücken, dem Freunde um den Hals und rief: Referendarius, wir sind gerettet!
+        self.assertEqual (tokenize(u"und rief: Referendarius, wir sind gerettet", keep_punctuation=True), 
+                          [u'und', u'rief', u':', u'referendarius', u',', u'wir', u'sind', u'gerettet'])
 
     def test_tokenize_numbers(self):
 
