@@ -95,7 +95,7 @@ PUNCTUATION = [
     u'+', u'-', u'*', u'#', u'=', u'|'
     u'/', u'\\',  
     u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
-    u'\'', u'"',
+    u'\'', u'"', u'”',
 ]
 
 MACRO_PUNCTUATION = [
