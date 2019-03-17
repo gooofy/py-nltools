@@ -54,6 +54,7 @@ class TestTokenizer (unittest.TestCase):
 # Sowie das zauberische Fuhrwerk im dichten Gebüsch verschwand, noch im sanften Nachhallen der Harmonikatöne, fiel Balthasar, ganz außer sich vor Wonne und Entzücken, dem Freunde um den Hals und rief: Referendarius, wir sind gerettet!
         self.assertEqual (tokenize(u"und rief: Referendarius, wir sind gerettet", keep_punctuation=True), 
                           [u'und', u'rief', u':', u'referendarius', u',', u'wir', u'sind', u'gerettet'])
+        self.assertEqual (tokenize(u"Flughafen Leipzig/Halle ist"), [u'flughafen', u'leipzig', u'halle', u'ist'])
 
     def test_tokenize_numbers(self):
 

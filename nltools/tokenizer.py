@@ -92,7 +92,7 @@ NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
 PUNCTUATION = [
     u',', u'.', u';', 
     u'?', u'!', 
-    u'+', u'-', u'*', u'#', u'=', u'|'
+    u'+', u'-', u'*', u'#', u'=', u'|',
     u'/', u'\\',  
     u'[', u']', u'(', u')', u'»', u'«', u'<', u'>', 
     u'\'', u'"', u'”',u'…'
