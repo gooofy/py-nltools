@@ -310,6 +310,210 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False, keep_underscores=
 
 #####################################################################
 #
+# french tokenizer
+#
+#####################################################################
+
+# word replacement table
+wrt_fr = { u'0'          : u'zéro',
+           u'1'          : u'un',
+         }
+
+symb_abbrev_norm_fr = [
+                       (u'\ufeff'  , u' '),
+                       (u'\u2019'  , u"'"),
+                       (u'\xa0'    , u' '),
+                       (u'\u203a'  , u' '),
+                       (u'\u2039'  , u' '),
+                       (u'&'       , u'et'),
+                       (u'\xa020'  , u' '),
+                       (u'„'       , u' '),
+                       (u'“'       , u' '),
+                       (u'«'       , u' '),
+                       (u'»'       , u' '),
+                       (u'$'       , u'dollar '),
+                       (u'€'       , u'euro ')
+                      ]
+
+# based on code for german below
+
+w1_fr = u"zéro un deux trois quatre cinq six sept huit neuf dix onze douze treize quatorze quinze seize dix-sept dix-huit dix-neuf".split()
+w2_fr = u"vingt trente quarante cinquante soixante".split()
+
+def nombre_en_mots(n, z=False):
+    if n < 0: raise ValueError
+    if n == 0 and z: return ''
+    if n < 20: return w1_fr[n]
+    if n < 70:
+        w = w2_fr[(n - 20) // 10]
+        if n % 10 == 1:
+            w = w + u' et un'
+        if n % 10 > 1:
+            w = w + '-' + w1_fr[n % 10]
+        return w
+    if n == 71:
+        return "soixante et onze"
+    if n < 80:
+        w = w1_fr[n - 60]
+        w = "soixante-" + w
+        return w
+    if n == 80:
+        return "quatre-vingts"
+    if n < 100:
+        return "quatre-vingt-" + w1_fr[(n - 80)]
+    if n < 1000:
+        if n // 100 == 1:
+            return "cent " + nombre_en_mots(n % 100, z=True)
+        return w1_fr[n // 100] + " cent " + nombre_en_mots(n % 100, z=True)
+    if n < 2000:
+        return "mille " + nombre_en_mots(n % 1000, z=True)
+    if n < 1000000:
+        return nombre_en_mots(n // 1000) + " mille " + nombre_en_mots(n % 1000, z=True)
+    if n < 1000000000:
+        m = n // 1000000
+        suff = ' millions ' if m>1 else ' million '
+        return nombre_en_mots(m) + suff + nombre_en_mots(n % 1000000, z=True)
+    if n < 1000000000:
+        m = n // 1000000000
+        suff = ' milliards ' if m>1 else ' milliard '
+        return nombre_en_mots(m) + suff + nombre_en_mots(n % 1000000000, z=True)
+    # raise ValueError
+    logging.warn('nombre_en_mots: cannot handle %s' % n)
+    return str(n)
+
+def spellout_number_fr (m):
+
+    numstr = m.group(0)
+
+    # print "spellout number:", numstr
+
+    if numstr[0].isspace():
+        numstr = numstr[1:]
+        res = ' '
+    else:
+        res = ''
+
+    if numstr[0] == '-':
+        res += 'moins '
+        numstr = numstr[1:].strip()
+
+    if not '.' in numstr:
+        numstr = numstr.replace(',','.')
+
+    if numstr.endswith('%'):
+        numstr = numstr[:len(numstr)-1].strip()
+        percent = True
+    else:
+        percent = False
+
+    parts = numstr.split ('.')
+
+    # print repr(parts)
+
+    res += nombre_en_mots(int(parts[0]))
+
+    if len(parts)>1 and len(parts[1])>0:
+
+        res += ' virgule'
+
+        # spell out leading zeroes
+        fractional_str = parts[1]
+        for c in fractional_str:
+            if c == '0':
+                res += u' zéro'
+                fractional_str = fractional_str[1:]
+            else:
+                break
+
+        # spell out (simpler) fractional part as a whole, otherwise spell by
+        # digit
+        if len(fractional_str)>0:
+            if int(fractional_str) < 1000:
+                res += ' ' + nombre_en_mots(int(fractional_str))
+            else:
+                for c in fractional_str:
+                    res += ' ' + nombre_en_mots(int(c))
+
+    if percent:
+        res += ' pour cent'
+
+    return res
+
+APOSTROPHE_ELISION_PATTERN1 = re.compile(r"(^|\s)[cdlmnst][']\w")
+
+def protect_elision (m):
+
+    s = m.group(0)
+
+    return s.replace(u"'", u"✓")
+
+def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=True):
+
+    global wrt_fr, symb_abbrev_norm_fr
+
+    for san in symb_abbrev_norm_fr:
+        srch = san[0]
+        repl = san[1]
+
+        s = s.replace (srch, repl)
+
+    s = s.lower()
+
+    # deal with numbers
+    s = PERCENT_PATTERN_START.sub(spellout_number_fr, s)
+    s = PERCENT_PATTERN_SPACE.sub(spellout_number_fr, s)
+
+    s = NUMBER_PATTERN_START.sub(spellout_number_fr, s)
+    s = NUMBER_PATTERN_SPACE.sub(spellout_number_fr, s)
+
+    # deal with elision
+    s = APOSTROPHE_ELISION_PATTERN1.sub(protect_elision, s)
+
+    # deal with punctuation
+    if keep_punctuation:
+        for p in PUNCTUATION:
+            s = s.replace (p, u' ' + p + u' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace (p, u' ' + p + u' ')
+    else:
+        for p in PUNCTUATION:
+            s = s.replace(p,' ')
+        if not keep_macros:
+            for p in MACRO_PUNCTUATION:
+                s = s.replace(p,' ')
+        if not keep_underscores:
+            s = s.replace('_',' ')
+
+    # re-insert apostrophes
+    s = s.replace (u'✓', u"'")
+
+    res = []
+
+    words = re.split ('\s+', s)
+
+    # print repr(words)
+
+    for word in words:
+
+        w = word.rstrip().replace(u'–',u'')
+        if len(w) > 0:
+
+            if w in wrt_fr:
+                w = wrt_fr[w]
+
+                words2 = re.split('\s+', w)
+                for w2 in words2:
+                    res.append(w2)
+
+            else:
+                res.append (w)
+
+    return res
+
+
+#####################################################################
+#
 # german tokenizer
 #
 #####################################################################
@@ -8402,6 +8606,9 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_unde
 
     if lang == 'en':
         return tokenize_en(s, keep_punctuation, keep_macros, keep_underscores)
+
+    if lang == 'fr':
+        return tokenize_fr(s, keep_punctuation, keep_macros, keep_underscores)
 
     if lang != 'de':
         # FIXME
