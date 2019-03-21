@@ -1,7 +1,25 @@
-ifndef::imagesdir[:imagesdir: images]
-
 py-nltools
 ----------
+
+A collection of abstraction layers and support functions that form the natural
+language processing foundation of the Zamia AI project:
+ 
+* `phonetics`: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
+* `tts`: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
+* `asr`: abstraction layer towards using kaldi-asr and pocketsphinx, models can be found here: http://goofy.zamia.org/voxforge/
+* `sequiturclient`: g2p using sequitur
+* `pulseplayer`: audio playback through pulseaudio
+* `pulserecorder`: audio recording through pulseaudio
+* `tokenizer`: english and german word tokenizer aimed at spoken language applications
+* `threadpool`: simple thread pool implementation
+* `vad`: Voice Activity Detection finite state machine based on webrtc VAD
+* `macro_engine`: Simple macro engine aimed at generating natural language expansions
+
+I plan to add modules as I need them in the Zamia AI projects. Some modules like `phonetics` and `tokenizer`
+have some overlap with larger projects like NLTK or spaCy - my modules tend to be more hands-on and simple minded
+than these and therefore are in no way meant to replace them. 
+
+ifndef::imagesdir[:imagesdir: images]
 
 ifndef::env-github[]
 [ditaa,"highlevel"]
@@ -29,24 +47,6 @@ endif::env-github[]
 ifdef::env-github[]
 image::highlevel.png[Highlevel Diagram]
 endif::env-github[]
-
-A collection of abstraction layers and support functions that form the natural
-language processing foundation of the Zamia AI project:
- 
-* `phonetics`: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
-* `tts`: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
-* `asr`: abstraction layer towards using kaldi-asr and pocketsphinx, models can be found here: http://goofy.zamia.org/voxforge/
-* `sequiturclient`: g2p using sequitur
-* `pulseplayer`: audio playback through pulseaudio
-* `pulserecorder`: audio recording through pulseaudio
-* `tokenizer`: english and german word tokenizer aimed at spoken language applications
-* `threadpool`: simple thread pool implementation
-* `vad`: Voice Activity Detection finite state machine based on webrtc VAD
-* `macro_engine`: Simple macro engine aimed at generating natural language expansions
-
-I plan to add modules as I need them in the Zamia AI projects. Some modules like `phonetics` and `tokenizer`
-have some overlap with larger projects like NLTK or spaCy - my modules tend to be more hands-on and simple minded
-than these and therefore are in no way meant to replace them. 
 
 Requirements
 ~~~~~~~~~~~~
