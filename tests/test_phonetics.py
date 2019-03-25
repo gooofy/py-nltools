@@ -36,6 +36,26 @@ class TestPhoneticAlphabets (unittest.TestCase):
         #print "res: %s" % res
         self.assertEqual (res, "aIOIaU3")
 
+        res = ipa2xsampa ("BON", u"bɔ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "bO~")
+
+        res = ipa2xsampa ("RESTAURANT", u"ʁɛstɔʁɑ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "REstORA~")
+
+        res = ipa2xsampa ("VIN", u"vɛ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "vE~")
+
+        res = ipa2xsampa ("BRUN", u"bʁœ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "bR9~")
+
+        res = ipa2xsampa ("POIGNANT", u"pwaɲɑ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "pwaJA~")
+
         res = ipa2mary ("EISENBAHN", u"ˈaɪ̯zən̩ˌbaːn")
         #print "res: %s" % res
         self.assertEqual (res, "'aIz@nba:n")
@@ -43,6 +63,26 @@ class TestPhoneticAlphabets (unittest.TestCase):
         res = ipa2mary ("DIPHTONGTEST", u"aɪɔɪaʊɜ'")
         #print "res: %s" % res
         self.assertEqual (res, "aIOIaUr='")
+
+        res = ipa2mary ("BON", u"bɔ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "bO~")
+
+        res = ipa2mary ("RESTAURANT", u"ʁɛstɔʁɑ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "REstORA~")
+
+        res = ipa2mary ("VIN", u"vɛ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "vE~")
+
+        res = ipa2mary ("BRUN", u"bʁœ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "bR9~")
+
+        res = ipa2mary ("POIGNANT", u"pwaɲɑ̃")
+        #print "res: %s" % res
+        self.assertEqual (res, "pwaJA~")
 
     def test_xarpa(self):
 
@@ -61,6 +101,26 @@ class TestPhoneticAlphabets (unittest.TestCase):
         res = xsampa2xarpabet ("AUSLEGUNG", "'aU-sle:-gUN")
         #print "res: %s" % res
         self.assertEqual (res, "AW S L EEH G UU NG")
+
+        res = xsampa2xarpabet ("BON", "bO~")
+        #print "res: %s" % res
+        self.assertEqual (res, "B ON")
+
+        res = xsampa2xarpabet ("RESTAURANT", "REstORA~")
+        #print "res: %s" % res
+        self.assertEqual (res, "RR EH S T OO RR AN")
+
+        res = xsampa2xarpabet ("VIN", u"vE~")
+        #print "res: %s" % res
+        self.assertEqual (res, "V EN")
+
+        res = xsampa2xarpabet ("BRUN", u"bR9~")
+        #print "res: %s" % res
+        self.assertEqual (res, "B RR OEN")
+
+        res = xsampa2xarpabet ("POIGNANT", u"pwaJA~")
+        #print "res: %s" % res
+        self.assertEqual (res, "P W AH NJ AN")
 
     def test_xarpa_unique(self):
 
