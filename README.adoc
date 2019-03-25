@@ -10,7 +10,7 @@ language processing foundation of the Zamia AI project:
 * `sequiturclient`: g2p using sequitur
 * `pulseplayer`: audio playback through pulseaudio
 * `pulserecorder`: audio recording through pulseaudio
-* `tokenizer`: english and german word tokenizer aimed at spoken language applications
+* `tokenizer`: english, french and german word tokenizers aimed at spoken language applications
 * `threadpool`: simple thread pool implementation
 * `vad`: Voice Activity Detection finite state machine based on webrtc VAD
 * `macro_engine`: Simple macro engine aimed at generating natural language expansions
@@ -75,8 +75,9 @@ Some scripts and files are based on works of others, in those cases it is my
 intention to keep the original license intact. Please make sure to check the
 copyright headers inside for more information.
 
-Author
-~~~~~~
+Authors
+~~~~~~~
 
 Guenter Bartsch <guenter@zamia.org>
+Paul Guyot <pguyot@kallisys.net>
 
