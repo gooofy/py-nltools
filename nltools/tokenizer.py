@@ -83,11 +83,8 @@ def isgalnum (s):
 #
 #####################################################################
 
-PERCENT_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*\s*[%]")
-PERCENT_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*\s*[%]")
-
-NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
-NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
+PERCENT_PATTERN = re.compile(r"(?:(?<=\s|[\(\)\[\];:])|^)[-]?\d+[,.]?\d*\s*[%](?=\s|[\(\)\[\];:.,]|$)")
+NUMBER_PATTERN = re.compile(r"(?:(?<=\s|[\(\)\[\];:])|^)[-]?\d+[,.]?\d*(?=\s|[\(\)\[\];:.,]|$)")
 
 PUNCTUATION = [
     u',', u'.', u';', 
@@ -231,11 +228,8 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False, keep_underscores=
     s = s.lower()
 
     # deal with numbers
-    s = PERCENT_PATTERN_START.sub(spellout_number_en, s)
-    s = PERCENT_PATTERN_SPACE.sub(spellout_number_en, s)
-
-    s = NUMBER_PATTERN_START.sub(spellout_number_en, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
+    s = PERCENT_PATTERN.sub(spellout_number_en, s)
+    s = NUMBER_PATTERN.sub(spellout_number_en, s)
 
     # deal with apostrophe-s
     s = APOSTROPHE_S_PATTERN1.sub(protect_apostrophe_s, s)
@@ -467,11 +461,8 @@ def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=
     s = s.lower()
 
     # deal with numbers
-    s = PERCENT_PATTERN_START.sub(spellout_number_fr, s)
-    s = PERCENT_PATTERN_SPACE.sub(spellout_number_fr, s)
-
-    s = NUMBER_PATTERN_START.sub(spellout_number_fr, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number_fr, s)
+    s = PERCENT_PATTERN.sub(spellout_number_fr, s)
+    s = NUMBER_PATTERN.sub(spellout_number_fr, s)
 
     # deal with all dashes between words (including numbers)
     s = PROTECT_DASH_PATTERN1.sub(protect_dash, s)
@@ -8636,8 +8627,7 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_unde
     # print '#2', s
 
     # deal with numbers
-    s = NUMBER_PATTERN_START.sub(spellout_number, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number, s)
+    s = NUMBER_PATTERN.sub(spellout_number, s)
 
     # deal with punctuation
     if keep_punctuation:
