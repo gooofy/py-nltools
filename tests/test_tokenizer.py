@@ -129,6 +129,7 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"dira-t-on", lang='fr'), [u"dira-t-on"])
         self.assertEqual (tokenize(u"fallait-il", lang='fr'), [u"fallait-il"])
         self.assertEqual (tokenize(u"zéro (9 degrés", lang='fr'), [u"zéro", u"neuf", u"degrés"])
+        self.assertEqual (tokenize(u"du 31 décembre 1861!", lang='fr'), [u"du", u"trente", u"et", u"un", u"décembre", u"mille", u"huit", "cent", "soixante", u"et", u"un"])        
 
     def test_tokenize_numbers_french(self):
         self.assertEqual (tokenize(u'1 2 3 4', lang='fr'), [u'un', u'deux', u'trois', u'quatre'])
