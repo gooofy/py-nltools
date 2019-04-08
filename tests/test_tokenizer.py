@@ -55,6 +55,7 @@ class TestTokenizer (unittest.TestCase):
         self.assertEqual (tokenize(u"und rief: Referendarius, wir sind gerettet", keep_punctuation=True), 
                           [u'und', u'rief', u':', u'referendarius', u',', u'wir', u'sind', u'gerettet'])
         self.assertEqual (tokenize(u"Flughafen Leipzig/Halle ist"), [u'flughafen', u'leipzig', u'halle', u'ist'])
+        self.assertEqual (tokenize(u"nach … Wecker"), [u'nach', u'wecker'])
 
     def test_tokenize_numbers(self):
 
