@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*- 
 
 #
-# Copyright 2014, 2016, 2017, 2018 Guenter Bartsch
+# Copyright 2014, 2016, 2017, 2018, 2019 Guenter Bartsch
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,15 +22,11 @@ import logging
 import wave
 import struct
 
-from nltools.asr import ASR, ASR_ENGINE_NNET3, ASR_ENGINE_POCKETSPHINX
+from nltools.asr import ASR, ASR_ENGINE_NNET3
 from nltools     import misc
 
 TEST_WAVE_EN       = 'tests/foo.wav'
-TEST_WAVE_EN_TS    = 'ah indeed'
-TEST_WAVE_EN_TS_PS = 'aha in dayton'
-
-POCKETSPHINX_MODELDIR  = 'models/cmusphinx-cont-generic-en-latest'
-POCKETSPHINX_MODELNAME = 'voxforge'
+TEST_WAVE_EN_TS    = 'this no longer appears to be the case'
 
 class TestASR (unittest.TestCase):
 
@@ -73,50 +69,6 @@ class TestASR (unittest.TestCase):
         asr = ASR(engine = ASR_ENGINE_NNET3)
         s, l = asr.decode_wav_file(TEST_WAVE_EN)
         self.assertEqual(s.strip(), TEST_WAVE_EN_TS)
-
-    def test_asr_pocketsphinx(self):
-
-        asr = ASR(engine = ASR_ENGINE_POCKETSPHINX, model_dir = POCKETSPHINX_MODELDIR, model_name = POCKETSPHINX_MODELNAME)
-
-        wavf = wave.open(TEST_WAVE_EN, 'rb')
-
-        # check format
-        self.assertEqual(wavf.getnchannels(), 1)
-        self.assertEqual(wavf.getsampwidth(), 2)
-
-        # process file in 250ms chunks
-
-        chunk_frames = 250 * wavf.getframerate() / 1000
-        tot_frames   = wavf.getnframes()
-
-        num_frames = 0
-        while num_frames < tot_frames:
-
-            finalize = False
-            if (num_frames + chunk_frames) < tot_frames:
-                nframes = chunk_frames
-            else:
-                nframes = tot_frames - num_frames
-                finalize = True
-
-            frames = wavf.readframes(nframes)
-            num_frames += nframes
-            samples = struct.unpack_from('<%dh' % nframes, frames)
-
-            s, l = asr.decode(samples, finalize, wavf.getframerate())
-
-            if not finalize:
-                self.assertEqual(s, None)
-
-        wavf.close()
-
-        self.assertEqual(s.strip(), TEST_WAVE_EN_TS_PS)
-
-    def test_asr_pocketsphinx_wavefile(self):
-        asr = ASR(engine = ASR_ENGINE_POCKETSPHINX, model_dir = POCKETSPHINX_MODELDIR, model_name = POCKETSPHINX_MODELNAME)
-        s, l = asr.decode_wav_file(TEST_WAVE_EN)
-        self.assertEqual(s.strip(), TEST_WAVE_EN_TS_PS)
-
 
 if __name__ == "__main__":
 

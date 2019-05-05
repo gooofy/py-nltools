@@ -6,7 +6,7 @@ language processing foundation of the Zamia AI project:
  
 * `phonetics`: translation functions between various phonetic alphabets (IPA, X-SAMPA, X-ARPABET, ...)
 * `tts`: abstraction layer towards using eSpeak NG, MaryTTS, SVOX Pico TTS or a remote TTS server and sequitur g2p
-* `asr`: abstraction layer towards using kaldi-asr and pocketsphinx, models can be found here: http://goofy.zamia.org/voxforge/
+* `asr`: abstraction layer towards using kaldi-asr, models can be found here: http://www.zamia-speech.org
 * `sequiturclient`: g2p using sequitur
 * `pulseplayer`: audio playback through pulseaudio
 * `pulserecorder`: audio recording through pulseaudio
@@ -36,12 +36,12 @@ ifndef::env-github[]
  |            |                           |                 |             |             |        |
  +-----------------------------------------------------------------------------------------------+
               |                           |                 |             |             |          
-     +--------+---------+          +------+----+            |             |             |
-     |        |         |          |           |            |             |             |
-     v        v         v          v           v            v             v             v
- +------+ +--------+ +------+  +-------+ +-----------+ +--------+    +----------+ +------------+ 
- | mary | | eSpeak | | pico |  | kaldi | | cmusphinx | | webrtc |    | sequitur | | pulseaudio |
- +------+ +--------+ +------+  +-------+ +-----------+ +--------+    +----------+ +------------+
+     +--------+---------+                 |                 |             |             |
+     |        |         |                 |                 |             |             |
+     v        v         v                 v                 v             v             v
+ +------+ +--------+ +------+         +-------+        +--------+    +----------+ +------------+ 
+ | mary | | eSpeak | | pico |         | kaldi |        | webrtc |    | sequitur | | pulseaudio |
+ +------+ +--------+ +------+         +-------+        +--------+    +----------+ +------------+
 ....
 endif::env-github[]
 ifdef::env-github[]
@@ -58,9 +58,8 @@ Requirements
   - MaryTTS, py-marytts
   - espeak-ng, py-espeak-ng
   - SVOX Pico TTS, py-picotts
-* for ASR one or more of:
-  - kaldi-asr 5.1, py-kaldi-asr
-  - pocketsphinx
+* for ASR
+  - kaldi-asr 5.4.248, py-kaldi-asr
 * sequitur
 * pulseaudio
 * webrtc
