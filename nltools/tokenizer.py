@@ -433,7 +433,8 @@ def spellout_number_fr (m):
 
     return res
 
-APOSTROPHE_ELISION_PATTERN1 = re.compile(r"(^|[^\w])(?:[cdjlmnst]|aujourd|entr|jusqu|lorsqu|presqu|puisqu|qu|quelqu|quoiqu)['][^'.,;]")
+APOSTROPHE_ELISION_PATTERN1 = re.compile(r"(^|[^\w])(?:[cdjlmnst]|jusqu|lorsqu|presqu|puisqu|qu|quelqu|quoiqu)['][^'.,;]")
+APOSTROPHE_ELISION_PATTERN2 = re.compile(r"(^|[^\w]|[✓])(?:aujourd|entr)['][^'.,;]")
 PROTECT_DASH_PATTERN1 = re.compile(r"[a-zàéèêëîïùü](-[a-zàéèêëîïùü])+")
 
 def protect_elision (m):
@@ -469,6 +470,7 @@ def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=
 
     # deal with elision
     s = APOSTROPHE_ELISION_PATTERN1.sub(protect_elision, s)
+    s = APOSTROPHE_ELISION_PATTERN2.sub(protect_elision, s)
 
     # deal with punctuation
     if keep_punctuation:
