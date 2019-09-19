@@ -19,7 +19,7 @@
 
 import logging
 import unittest
-from nltools.phonetics import ipa2xsampa, ipa2mary, xsampa2xarpabet, xs2xa_table
+from nltools.phonetics import ipa2xsampa, ipa2mary, xsampa2xarpabet, xs2xa_table, xsampa2ipa
 
 class TestPhoneticAlphabets (unittest.TestCase):
 
@@ -83,6 +83,10 @@ class TestPhoneticAlphabets (unittest.TestCase):
         res = ipa2mary ("POIGNANT", u"pwaɲɑ̃")
         #print "res: %s" % res
         self.assertEqual (res, "pwaJA~")
+
+        res = xsampa2ipa(u"entrée A~ t R e", u"A~ t R e")
+        #print "res: %s" % res
+        self.assertEqual (res, u"ɑ̃tʁe")
 
     def test_xarpa(self):
 
