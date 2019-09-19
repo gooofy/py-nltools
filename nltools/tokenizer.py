@@ -488,6 +488,10 @@ def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=
         if not keep_underscores:
             s = s.replace('_',' ')
 
+    # deal with digits that may appear after splitting punctuation.
+    s = PERCENT_PATTERN.sub(spellout_number_fr, s)
+    s = NUMBER_PATTERN.sub(spellout_number_fr, s)
+
     # re-insert apostrophes & dashes
     s = s.replace (u'✓', u"'")
     s = s.replace (u'⥬', u"-")
