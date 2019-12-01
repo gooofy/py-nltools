@@ -83,11 +83,8 @@ def isgalnum (s):
 #
 #####################################################################
 
-PERCENT_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*\s*[%]")
-PERCENT_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*\s*[%]")
-
-NUMBER_PATTERN_START = re.compile(r"^[-]?\d+[,.]?\d*")
-NUMBER_PATTERN_SPACE = re.compile(r"\s[-]?\d+[,.]?\d*")
+PERCENT_PATTERN = re.compile(r"(?:(?<=\s|[\(\)\[\];:])|^)[-]?\d+[,.]?\d*\s*[%](?=\s|[\(\)\[\];:.,!?…-]|$)")
+NUMBER_PATTERN = re.compile(r"(?:(?<=\s|[\(\)\[\];:])|^)[-]?\d+[,.]?\d*(?=\s|[\(\)\[\];:.,!?…-]|$)")
 
 PUNCTUATION = [
     u',', u'.', u';', 
@@ -231,11 +228,8 @@ def tokenize_en (s, keep_punctuation=False, keep_macros=False, keep_underscores=
     s = s.lower()
 
     # deal with numbers
-    s = PERCENT_PATTERN_START.sub(spellout_number_en, s)
-    s = PERCENT_PATTERN_SPACE.sub(spellout_number_en, s)
-
-    s = NUMBER_PATTERN_START.sub(spellout_number_en, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number_en, s)
+    s = PERCENT_PATTERN.sub(spellout_number_en, s)
+    s = NUMBER_PATTERN.sub(spellout_number_en, s)
 
     # deal with apostrophe-s
     s = APOSTROPHE_S_PATTERN1.sub(protect_apostrophe_s, s)
@@ -439,7 +433,8 @@ def spellout_number_fr (m):
 
     return res
 
-APOSTROPHE_ELISION_PATTERN1 = re.compile(r"(^|[^\w])(?:[cdjlmnst]|aujourd|entr|jusqu|lorsqu|presqu|puisqu|qu|quelqu|quoiqu)['][^'.,;]")
+APOSTROPHE_ELISION_PATTERN1 = re.compile(r"(^|[^\w])(?:[cdjlmnst]|jusqu|lorsqu|presqu|puisqu|qu|quelqu|quoiqu)['][^'.,;]")
+APOSTROPHE_ELISION_PATTERN2 = re.compile(r"(^|[^\w]|[✓])(?:aujourd|entr)['][^'.,;]")
 PROTECT_DASH_PATTERN1 = re.compile(r"[a-zàéèêëîïùü](-[a-zàéèêëîïùü])+")
 
 def protect_elision (m):
@@ -467,17 +462,15 @@ def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=
     s = s.lower()
 
     # deal with numbers
-    s = PERCENT_PATTERN_START.sub(spellout_number_fr, s)
-    s = PERCENT_PATTERN_SPACE.sub(spellout_number_fr, s)
-
-    s = NUMBER_PATTERN_START.sub(spellout_number_fr, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number_fr, s)
+    s = PERCENT_PATTERN.sub(spellout_number_fr, s)
+    s = NUMBER_PATTERN.sub(spellout_number_fr, s)
 
     # deal with all dashes between words (including numbers)
     s = PROTECT_DASH_PATTERN1.sub(protect_dash, s)
 
     # deal with elision
     s = APOSTROPHE_ELISION_PATTERN1.sub(protect_elision, s)
+    s = APOSTROPHE_ELISION_PATTERN2.sub(protect_elision, s)
 
     # deal with punctuation
     if keep_punctuation:
@@ -494,6 +487,10 @@ def tokenize_fr (s, keep_punctuation=False, keep_macros=False, keep_underscores=
                 s = s.replace(p,' ')
         if not keep_underscores:
             s = s.replace('_',' ')
+
+    # deal with digits that may appear after splitting punctuation.
+    s = PERCENT_PATTERN.sub(spellout_number_fr, s)
+    s = NUMBER_PATTERN.sub(spellout_number_fr, s)
 
     # re-insert apostrophes & dashes
     s = s.replace (u'✓', u"'")
@@ -8636,8 +8633,7 @@ def tokenize (s, lang='de', keep_punctuation=False, keep_macros=False, keep_unde
     # print '#2', s
 
     # deal with numbers
-    s = NUMBER_PATTERN_START.sub(spellout_number, s)
-    s = NUMBER_PATTERN_SPACE.sub(spellout_number, s)
+    s = NUMBER_PATTERN.sub(spellout_number, s)
 
     # deal with punctuation
     if keep_punctuation:
