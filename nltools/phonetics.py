@@ -199,7 +199,6 @@ IPA_vowels = set([
 
 XSAMPA_normalization = {
     ' ': None,
-    '~': None,
     '0': 'O',
     ',': None,
     }
